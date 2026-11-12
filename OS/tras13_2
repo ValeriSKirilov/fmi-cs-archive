@@ -1,0 +1,21 @@
+#include	<stdio.h>
+#include	<stdlib.h>
+#include	<unistd.h>
+#include	<fcntl.h>
+
+main ()
+{
+int pid ; 
+char  a = '2', x = '3';
+
+pid = fork ( ) ;
+if  (  pid == 0  )  
+{ x = '0';  
+   write ( 1, "\n a= ", 5 ); write ( 1, &a, 1 ) ;
+}
+else
+{ wait ( ) ;  x = '1';  a = 'b' ;
+   write ( 1, "\n x= ", 5 ); write ( 1, &x, 1 ) ;
+}
+write ( 1, "\n a= ", 5 ); write ( 1, &a, 1 ) ;
+}

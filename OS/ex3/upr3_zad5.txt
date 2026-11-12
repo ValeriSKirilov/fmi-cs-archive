@@ -1,0 +1,4 @@
+date
+cal
+who
+find /home/student/ -type f -name ".*"

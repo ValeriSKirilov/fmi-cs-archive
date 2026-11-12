@@ -1,0 +1,9 @@
+ll ex3 | sort -k8
+cat ex3/x\&x
+cat ex3/upr3_zad1
+chmod 764 ex3/x\&x ex3/upr3_zad1
+mkdir "FIRST"
+cp ex3/x\&x ex4/FIRST/
+cp ex3/upr3_zad1 ex4/FIRST/
+rm ex3/x\&x
+rm ex3/upr3_zad1

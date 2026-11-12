@@ -1,0 +1,1 @@
+find / -type f -name f1 -user kn00577 -exec cat {} +

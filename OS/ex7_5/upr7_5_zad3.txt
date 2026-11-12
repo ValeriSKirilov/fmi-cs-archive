@@ -1,0 +1,2 @@
+find /home/KN/ -user kn00577 2> /dev/null | wc -l
+find / -type f -name f1 -exec awk 'FNR > 10 {nextfile} /line/ {print}' {} + 2> /dev/null | tee fff

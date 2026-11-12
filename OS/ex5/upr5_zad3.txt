@@ -1,0 +1,2 @@
+cat upr5_zad1 upr5_zad2 | sort > upr5_zad3
+wc -c upr5_zad1 upr5_zad2 upr5_zad3 | awk {print } | head -n 3

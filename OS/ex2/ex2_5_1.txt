@@ -1,0 +1,30 @@
+/home/student/hello.c
+/home/student/second.c
+/home/KN/kn00577
+/home/student/:
+total 56
+drwxrwxr-x. 5 student student  4096 Feb 23 15:53 .
+drwxr-xr-x. 8 root    root       84 Feb 16 16:57 ..
+-rw-------. 1 student student 16874 Feb 23 15:28 .bash_history
+-rw-r--r--. 1 student student    18 Apr 30  2024 .bash_logout
+-rw-r--r--. 1 student student   141 Apr 30  2024 .bash_profile
+-rw-r--r--. 1 student student   492 Feb 17 11:36 .bashrc
+drwx------. 3 student student    20 Feb 17 09:38 .config
+-rw-rw-r--. 1 svi     teacher    99 Feb 23 15:31 hello.c
+-rw-------. 1 student student    45 Feb 18 13:39 .lesshst
+-rw-rw-r--. 1 svi     teacher   103 Feb 23 15:31 second.c
+lrwxrwxrwx. 1 svi     teacher     7 Feb 23 15:42 sym_link -> hello.c
+drwxrwxr-x. 2 svi     teacher     6 Feb 23 15:42 temp
+-rw-------. 1 student student  8011 Feb 18 13:40 .viminfo
+drwxrwxr-x. 3 svi     teacher    18 Feb 16 00:09 WORK
+
+/home/student/temp:
+total 4
+drwxrwxr-x. 2 svi     teacher    6 Feb 23 15:42 .
+drwxrwxr-x. 5 student student 4096 Feb 23 15:53 ..
+
+/home/student/WORK:
+total 4
+drwxrwxr-x. 3 svi     teacher   18 Feb 16 00:09 .
+drwxrwxr-x. 5 student student 4096 Feb 23 15:53 ..
+drwxr-x--x. 4 svi     teacher   27 Feb 16 00:09 next

@@ -1,0 +1,1 @@
+cat /etc/passwd | awk -F':' '{print }' | awk -F',' '{print }' | sort | tr [:lower:] [:upper:] | head -n -11

@@ -1,0 +1,7 @@
+who | awk '{print }' && who | wc -l
+write kn00569 < upr5_zad1
+cat upr5_zad1 upr5_zad2 | sort > upr5_zad3
+wc -c upr5_zad1 upr5_zad2 upr5_zad3 | awk {print } | head -n 3
+grep -r "int" && grep -rc "int"
+find . -type f -name 'f*.c' -exec ls -l {} \; | sort -k7 && find . -type f -name f*.c -exec ls -l {} \; | awk '{print }' > zad5_helper
+who | wc -l > active_users

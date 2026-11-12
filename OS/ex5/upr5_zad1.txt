@@ -1,0 +1,1 @@
+who | awk '{print }' && who | wc -l

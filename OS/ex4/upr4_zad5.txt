@@ -1,0 +1,2 @@
+write kn00569 -> hello
+write kn00569 pts/1 -> hello

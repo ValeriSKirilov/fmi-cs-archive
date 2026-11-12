@@ -1,0 +1,1 @@
+find . -type f -name 'f*.c' -exec ls -l {} \; | sort -k7 && find . -type f -name f*.c -exec ls -l {} \; | awk '{print }' > zad5_helper
