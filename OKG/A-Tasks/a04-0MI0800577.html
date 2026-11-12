@@ -1,0 +1,232 @@
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script type="importmap">
+        { "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+            "csg/": "https://cdn.jsdelivr.net/gh/looeee/threejs-csg@main/src/CSG/"
+       } }
+    </script>
+</head>
+<body>
+<script type="module">
+    import * as THREE from "three";
+    import {CSG} from "csg/CSG.js";
+
+    const renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+        50,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+    );
+    camera.position.set(0, 40, 0);
+    camera.lookAt(0, 0, 0);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    mainLight.position.set(-5, 8, 5);
+    mainLight.castShadow = true;
+    scene.add(mainLight);
+
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    fillLight.position.set(5, 3, 5);
+    scene.add(fillLight);
+
+    const shape = new THREE.Shape();
+
+    shape.moveTo(-0.85, 0.88);
+    shape.lineTo(-0.78, 0.92);
+    shape.lineTo(-0.68, 0.90);
+    shape.lineTo(-0.55, 0.93);
+    shape.lineTo(-0.42, 0.89);
+    shape.lineTo(-0.28, 0.91);
+    shape.lineTo(-0.15, 0.88);
+    shape.lineTo(0.0, 0.92);
+    shape.lineTo(0.15, 0.89);
+    shape.lineTo(0.30, 0.93);
+    shape.lineTo(0.45, 0.88);
+    shape.lineTo(0.60, 0.91);
+    shape.lineTo(0.75, 0.87);
+    shape.lineTo(0.88, 0.90);
+
+    shape.lineTo(0.91, 0.75);
+    shape.lineTo(0.89, 0.58);
+    shape.lineTo(0.92, 0.42);
+    shape.lineTo(0.88, 0.25);
+    shape.lineTo(0.91, 0.08);
+    shape.lineTo(0.89, -0.10);
+    shape.lineTo(0.92, -0.28);
+    shape.lineTo(0.88, -0.45);
+    shape.lineTo(0.90, -0.62);
+    shape.lineTo(0.87, -0.78);
+    shape.lineTo(0.91, -0.88);
+
+    shape.lineTo(0.75, -0.90);
+    shape.lineTo(0.58, -0.87);
+    shape.lineTo(0.42, -0.91);
+    shape.lineTo(0.25, -0.88);
+    shape.lineTo(0.08, -0.92);
+    shape.lineTo(-0.10, -0.89);
+    shape.lineTo(-0.28, -0.93);
+    shape.lineTo(-0.45, -0.88);
+    shape.lineTo(-0.62, -0.91);
+    shape.lineTo(-0.78, -0.87);
+    shape.lineTo(-0.88, -0.90);
+
+    shape.lineTo(-0.91, -0.75);
+    shape.lineTo(-0.89, -0.58);
+    shape.lineTo(-0.92, -0.42);
+    shape.lineTo(-0.88, -0.25);
+    shape.lineTo(-0.91, -0.08);
+    shape.lineTo(-0.89, 0.10);
+    shape.lineTo(-0.92, 0.28);
+    shape.lineTo(-0.88, 0.45);
+    shape.lineTo(-0.90, 0.62);
+    shape.lineTo(-0.87, 0.78);
+    shape.lineTo(-0.85, 0.88);
+
+    const geometry = new THREE.ShapeGeometry(shape);
+    const material = new THREE.MeshBasicMaterial({
+        color: 0xE8D4A8,
+        side: THREE.DoubleSide
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.y = -3;
+    mesh.rotation.x = Math.PI / 2;
+    mesh.scale.set(20, 20, 20);
+    scene.add(mesh);
+
+    const edge = mesh.clone();
+    edge.material = new THREE.MeshBasicMaterial({
+        color: 0x4A4436,
+        side: THREE.DoubleSide
+    });
+    edge.position.y = -3.1;
+    edge.scale.set(21, 21, 21);
+    scene.add(edge);
+
+    function addScrew({pos_x = 0, pos_y = 0, pos_z = 0, rotat_x = 0, rotat_y = 0, rotat_z = 0, scale = 1}) {
+        const body_radius = 1;
+        const body_length = 8;
+        const head_radius = 1.6;
+        const head_length = 2;
+
+        const screwMaterial = new THREE.MeshStandardMaterial({
+            color: 0xA26E4A,
+            metalness: 0.9,
+            roughness: 0.3,
+            envMapIntensity: 1.0
+        })
+
+        const screw = new THREE.Group();
+
+        const base = new THREE.Mesh(
+            new THREE.CylinderGeometry(body_radius, body_radius, body_length, 32, 32),
+            screwMaterial
+        );
+        screw.add(base);
+
+        for (let i = 0; i < 22; i++) {
+            const ring = new THREE.Mesh(
+                new THREE.TorusGeometry(body_radius, 0.15, 32, 32),
+                screwMaterial
+            );
+            ring.position.y = -body_length / 2 + 0.5 + i * 0.35;
+            ring.rotation.x = Math.PI / 2;
+            screw.add(ring);
+        }
+
+        const hexagonCut = new THREE.Mesh(
+            new THREE.CylinderGeometry(body_radius, body_radius, head_length, 6, 32)
+        );
+        hexagonCut.position.y = head_length / 2;
+
+        const sphereCut = new THREE.Mesh(
+            new THREE.SphereGeometry(head_radius * 3, 32, 32)
+        );
+        sphereCut.position.y = 5.5;
+
+        const top = new THREE.Mesh(
+            new THREE.CylinderGeometry(head_radius, head_radius, head_length, 32, 32),
+            screwMaterial
+        );
+
+        let csg = new CSG();
+        csg.subtract([top, hexagonCut, sphereCut]);
+
+        const head = csg.toMesh();
+        head.position.y = body_length / 2 + head_length / 2;
+        screw.add(head);
+
+        screw.position.set(pos_x, pos_y, pos_z);
+        screw.rotation.set(rotat_x, rotat_y, rotat_z);
+        screw.scale.set(scale, scale, scale);
+
+        return screw
+    }
+
+    // MIDDLE TWO
+    scene.add(addScrew({pos_x: 1, pos_y: 1, pos_z: 1.2, rotat_z: Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: -1, pos_y: 1, pos_z: -1.2, rotat_z: -Math.PI / 2, scale: 0.9}));
+
+    // RIGHT TOP TWO
+    scene.add(addScrew({pos_x: 4, pos_z: -5.75, rotat_x: Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: 6.5, pos_z: -4, rotat_x: -Math.PI / 2, scale: 0.9}));
+
+    // RIGHT BOTTOM TWO
+    scene.add(addScrew({pos_x: 4, pos_z: 5.75, rotat_x: -Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: 6.5, pos_z: 4, rotat_x: Math.PI / 2, scale: 0.9}));
+
+    // LEFT TOP TWO
+    scene.add(addScrew({pos_x: -4, pos_z: -5.75, rotat_x: Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: -6.5, pos_z: -4, rotat_x: -Math.PI / 2, scale: 0.9}));
+
+    // LEFT BOTTOM TWO
+    scene.add(addScrew({pos_x: -4, pos_z: 5.75, rotat_x: -Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: -6.5, pos_z: 4, rotat_x: Math.PI / 2, scale: 0.9}));
+
+    // POINTED UP
+    scene.add(addScrew({pos_x: 5.7, pos_y: -3, scale: 1.1}))
+    scene.add(addScrew({pos_x: -5.7, pos_y: -3, scale: 1.1}))
+
+    scene.add(addScrew({pos_x: 4.7, pos_y: -3, pos_z: 10, scale: 1.1}));
+    scene.add(addScrew({pos_x: 4.7, pos_y: -3, pos_z: -10, scale: 1.1}));
+
+    scene.add(addScrew({pos_x: -4.7, pos_y: -3, pos_z: 10, scale: 1.1}));
+    scene.add(addScrew({pos_x: -4.7, pos_y: -3, pos_z: -10, scale: 1.1}));
+
+    // ENDS
+    scene.add(addScrew({pos_x: 5, pos_z: -10.5, rotat_z: -Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: 5, pos_z: 10.5, rotat_z: -Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: -5, pos_z: -10.5, rotat_z: Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: -5, pos_z: 10.5, rotat_z: Math.PI / 2, scale: 0.9}));
+
+    // MIDDLES
+    scene.add(addScrew({pos_x: 5.25, pos_y: 1, pos_z: -5, rotat_x: -Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: 5.25, pos_y: 1, pos_z: 5, rotat_x: Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: -5.25, pos_y: 1, pos_z: -5, rotat_x: -Math.PI / 2, scale: 0.9}));
+    scene.add(addScrew({pos_x: -5.25, pos_y: 1, pos_z: 5, rotat_x: Math.PI / 2, scale: 0.9}));
+
+    renderer.render(scene, camera);
+
+</script>
+</body>
+</html>
+

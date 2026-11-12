@@ -1,0 +1,112 @@
+﻿<html>
+
+<head>
+	<style>
+		body {
+			margin: 0;
+			overflow: hidden;
+		}
+
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+	<script type="importmap">
+			{ "imports": {
+				"three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+			} }
+		</script>
+</head>
+
+<body>
+	<script type="module">
+
+		import * as THREE from "three";
+
+		// Задача: махнете големия куб и сложете 8 малки
+		// кубчета във върховете на въображаем голям куб
+
+		var renderer = new THREE.WebGLRenderer();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.setAnimationLoop(drawFrame);
+		document.body.appendChild(renderer.domElement);
+
+		var scene = new THREE.Scene();
+
+		var aspect = window.innerWidth / window.innerHeight;
+		var camera = new THREE.PerspectiveCamera(30, aspect);
+		camera.position.set(3, 3, 8);
+		camera.lookAt(scene.position);
+
+		var geometry_cube = new THREE.BoxGeometry(1 / 3, 1 / 3, 1 / 3);
+		var material = new THREE.MeshPhongMaterial();
+
+		var cube1 = new THREE.Mesh(geometry_cube, material);
+		var cube2 = new THREE.Mesh(geometry_cube, material);
+		var cube3 = new THREE.Mesh(geometry_cube, material);
+		var cube4 = new THREE.Mesh(geometry_cube, material);
+		var cube5 = new THREE.Mesh(geometry_cube, material);
+		var cube6 = new THREE.Mesh(geometry_cube, material);
+		var cube7 = new THREE.Mesh(geometry_cube, material);
+		var cube8 = new THREE.Mesh(geometry_cube, material);
+
+		cube1.position.set(1, 1, 1);
+		cube2.position.set(-1, 1, 1);
+		cube3.position.set(1, 1, -1);
+		cube4.position.set(-1, 1, -1);
+
+		cube5.position.set(1, -1, 1);
+		cube6.position.set(-1, -1, 1);
+		cube7.position.set(1, -1, -1);
+		cube8.position.set(-1, -1, -1);
+
+		scene.add(cube1, cube2, cube3, cube4, cube5, cube6, cube7, cube8);
+
+		var geometry_rect_x = new THREE.BoxGeometry(2, 1 / 7, 1 / 7);
+		var geometry_rect_y = new THREE.BoxGeometry(1 / 7, 2, 1 / 7);
+		var geometry_rect_z = new THREE.BoxGeometry(1 / 7, 1 / 7, 2);
+
+		var material_rect = new THREE.MeshPhongMaterial({ color: 'gold' });
+
+
+		for (var y = -1; y < 2; y += 2)
+			for (var z = -1; z < 2; z += 2) {
+				var rect = new THREE.Mesh(geometry_rect_x, material_rect);
+				rect.position.set(0, y, z);
+				scene.add(rect);
+			}
+
+		for (var x = -1; x < 2; x += 2)
+			for (var z = -1; z < 2; z += 2) {
+				var rect = new THREE.Mesh(geometry_rect_y, material_rect);
+				rect.position.set(x, 0, z);
+				scene.add(rect);
+			}
+
+		for (var x = -1; x < 2; x += 2)
+			for (var y = -1; y < 2; y += 2) {
+				var rect = new THREE.Mesh(geometry_rect_z, material_rect);
+				rect.position.set(x, y, 0);
+				scene.add(rect);
+			}
+
+		// две светлини - отпред и отзад на сцената
+		var light = new THREE.PointLight('white', 70);
+		light.position.set(3, 4, 5);
+		scene.add(light);
+
+		light = new THREE.PointLight('white', 70);
+		light.position.set(-3, 4, -5);
+		scene.add(light);
+
+		// въртене на сцената като в микровълнова фурна
+		function drawFrame(t) {
+			scene.rotation.y = t / 1000;
+			renderer.render(scene, camera);
+		}
+
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+
+<!-- Трите имена на студента -->
+
+<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+		<script type="importmap">
+			{ "imports": {
+				"three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+				"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+				"villa": "https://boytchev.github.io/CourseOKG/villa.js"
+			} }
+		</script>
+	</head>
+	
+	<body>
+		<script type="module">
+			import * as THREE from "three";
+			import {villa, renderer, scene, camera, light, contraLight, controls} from "villa";
+
+			villa( '2MI0806047' ); // да е реалния фак.н.
+				
+			// 1. преименувайте файла на villa-g-fn.html,
+			//    g=номер на група, а fn=факултетен номер
+			//    също попълнете коментара на третия ред!
+			//
+			// 2. първо сменете параметъра на villa( ) да
+			//    е факултетният ви номер - по този начин
+			//    ще се генерират сцена, земя и контур на
+			//    вилата ви, която ще трябва да направите
+			//
+			// 3. едва тогава почвайте да строите стените
+			//    и да добавяте исканите обекти по стаите
+			//
+			// 4. кубът по-долу е само за пример как може
+			//    да се слагат обекти, които правят сянка
+			//
+			// 5. белите квадратчета имат размер 20x20 см
+			//
+			// 6. горд съм как коментарите са равно дълги
+			
+			
+			// куб 2х2х2 метра
+			var geometry = new THREE.BoxGeometry( 2, 2, 2 ),
+				material = new THREE.MeshLambertMaterial( {color: 'crimson'} );
+				
+			var cube = new THREE.Mesh( geometry, material );
+				cube.position.set( 0, 1, 0 );
+				cube.receiveShadow = true;
+				cube.castShadow = true;
+			
+			scene.add( cube );
+
+		</script>
+		
+	</body>
+</html>
+
+

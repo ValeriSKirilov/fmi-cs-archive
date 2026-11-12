@@ -1,0 +1,1129 @@
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script type="importmap">
+        { "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+        } }
+    </script>
+</head>
+<body>
+<script type="module">
+    import * as THREE from "three";
+
+    const renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+        50,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+    );
+    camera.position.set(0, 35, 110);
+    camera.lookAt(0, 15, 0);
+
+    scene.background = new THREE.Color(0x87CEEB);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(50, 80, 50);
+    scene.add(directionalLight);
+
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+    directionalLight2.position.set(-50, 40, 30);
+    scene.add(directionalLight2);
+
+    // Function to add edges
+    function addEdges(mesh, color = 0x000000) {
+        const edges = new THREE.EdgesGeometry(mesh.geometry);
+        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: color}));
+        mesh.add(line);
+        return mesh;
+    }
+
+    // Floor proportions and materials
+    const floorGroup = new THREE.Group();
+    const floorWidth = 180;
+    const floorDepth = 140;
+
+    const lightTileMat = new THREE.MeshPhongMaterial({color: 0xE0E0E0});
+    const darkTileMat = new THREE.MeshPhongMaterial({color: 0x9B8B7E});
+
+    // Floor base
+    const baseFloor = new THREE.Mesh(
+        new THREE.BoxGeometry(floorWidth, 0.2, floorDepth),
+        lightTileMat
+    );
+    baseFloor.position.set(0, 0.1, 0);
+    floorGroup.add(baseFloor);
+
+    // Floor grid proportions
+    const lineWidth = 0.4;
+    const spacing = 10;
+
+    // Horizontal lines
+    for (let z = -floorDepth / 2; z <= floorDepth / 2; z += spacing) {
+        const hLine = new THREE.Mesh(
+            new THREE.BoxGeometry(floorWidth, 0.25, lineWidth),
+            darkTileMat
+        );
+        hLine.position.set(0, 0.23, z);
+        floorGroup.add(hLine);
+    }
+
+    // Vertical lines
+    for (let x = -floorWidth / 2; x <= floorWidth / 2; x += spacing) {
+        const vLine = new THREE.Mesh(
+            new THREE.BoxGeometry(lineWidth, 0.25, floorDepth),
+            darkTileMat
+        );
+        vLine.position.set(x, 0.23, 0);
+        floorGroup.add(vLine);
+    }
+
+    scene.add(floorGroup);
+
+    // Materials
+    const redWallMat = new THREE.MeshPhongMaterial({color: 0x9B4A4A});
+    const whiteMat = new THREE.MeshPhongMaterial({color: 0xF5F5F5});
+    const grayMat = new THREE.MeshPhongMaterial({color: 0xB0B8C0});
+    const darkRedMat = new THREE.MeshPhongMaterial({color: 0x6B3838});
+    const roofMat = new THREE.MeshPhongMaterial({color: 0x4A4A4A});
+    const goldMat = new THREE.MeshPhongMaterial({color: 0xD4AF37, shininess: 100, emissive: 0x4A3000});
+    const windowGlowMat = new THREE.MeshBasicMaterial({color: 0xFFE88C});
+
+    // Garden creation function
+    function createGarden() {
+        const gardenGroup = new THREE.Group();
+
+        // Garden materials
+        const trunkMat = new THREE.MeshPhongMaterial({color: 0x4A3520});
+        const leafMat = new THREE.MeshPhongMaterial({color: 0x3A5F2A});
+        const bushMat = new THREE.MeshPhongMaterial({color: 0x4A7C3A});
+        const pathMat = new THREE.MeshPhongMaterial({color: 0xC4B5A0});
+        const fenceMat = new THREE.MeshPhongMaterial({color: 0x2A2A2A});
+        const stoneMat = new THREE.MeshPhongMaterial({color: 0xA0A0A0});
+
+        // Fence proportions
+        const fenceHeight = 3;
+        const postSpacing = 6;
+
+        // Front fence
+        for (let x = -70; x <= 70; x += postSpacing) {
+            if (Math.abs(x) < 14) continue;
+
+            // Fence post
+            const post = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(0.3, fenceHeight, 0.3),
+                fenceMat
+            ));
+            post.position.set(x, fenceHeight / 2, 62);
+            gardenGroup.add(post);
+
+            // Gold finial on post
+            const finial = addEdges(new THREE.Mesh(
+                new THREE.SphereGeometry(0.4, 8, 8),
+                goldMat
+            ));
+            finial.position.set(x, fenceHeight + 0.3, 62);
+            gardenGroup.add(finial);
+
+            // Horizontal rails
+            if (x < 70 - postSpacing && Math.abs(x + postSpacing / 2) > 14) {
+                const rail1 = addEdges(new THREE.Mesh(
+                    new THREE.BoxGeometry(postSpacing, 0.15, 0.15),
+                    fenceMat
+                ));
+                rail1.position.set(x + postSpacing / 2, 1, 62);
+                gardenGroup.add(rail1);
+
+                const rail2 = addEdges(new THREE.Mesh(
+                    new THREE.BoxGeometry(postSpacing, 0.15, 0.15),
+                    fenceMat
+                ));
+                rail2.position.set(x + postSpacing / 2, 2.2, 62);
+                gardenGroup.add(rail2);
+            }
+        }
+
+        // Gate posts
+        for (let side of [-1, 1]) {
+            const gatePost = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(0.6, fenceHeight + 1, 0.6),
+                stoneMat
+            ));
+            gatePost.position.set(side * 14, (fenceHeight + 1) / 2, 62);
+            gardenGroup.add(gatePost);
+
+            const gateOrnament = addEdges(new THREE.Mesh(
+                new THREE.SphereGeometry(0.8, 12, 12),
+                goldMat
+            ));
+            gateOrnament.position.set(side * 14, fenceHeight + 1.5, 62);
+            gardenGroup.add(gateOrnament);
+        }
+
+        // Side fences
+        for (let z = 62; z >= -30; z -= postSpacing) {
+            // Left side
+            const leftPost = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(0.3, fenceHeight, 0.3),
+                fenceMat
+            ));
+            leftPost.position.set(-70, fenceHeight / 2, z);
+            gardenGroup.add(leftPost);
+
+            const leftFinial = addEdges(new THREE.Mesh(
+                new THREE.SphereGeometry(0.4, 8, 8),
+                goldMat
+            ));
+            leftFinial.position.set(-70, fenceHeight + 0.3, z);
+            gardenGroup.add(leftFinial);
+
+            // Right side
+            const rightPost = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(0.3, fenceHeight, 0.3),
+                fenceMat
+            ));
+            rightPost.position.set(70, fenceHeight / 2, z);
+            gardenGroup.add(rightPost);
+
+            const rightFinial = addEdges(new THREE.Mesh(
+                new THREE.SphereGeometry(0.4, 8, 8),
+                goldMat
+            ));
+            rightFinial.position.set(70, fenceHeight + 0.3, z);
+            gardenGroup.add(rightFinial);
+
+            // Rails
+            if (z > -30 + postSpacing) {
+                for (let side of [-70, 70]) {
+                    const rail1 = addEdges(new THREE.Mesh(
+                        new THREE.BoxGeometry(0.15, 0.15, postSpacing),
+                        fenceMat
+                    ));
+                    rail1.position.set(side, 1, z - postSpacing / 2);
+                    gardenGroup.add(rail1);
+
+                    const rail2 = addEdges(new THREE.Mesh(
+                        new THREE.BoxGeometry(0.15, 0.15, postSpacing),
+                        fenceMat
+                    ));
+                    rail2.position.set(side, 2.2, z - postSpacing / 2);
+                    gardenGroup.add(rail2);
+                }
+            }
+        }
+
+        // Pathways
+        const pathBorderMat = new THREE.MeshPhongMaterial({color: 0x8B7355});
+
+        const mainPathWidth = 10;
+        const pathHeight = 0.3;
+
+        // Central path
+        const mainPath = new THREE.Mesh(
+            new THREE.BoxGeometry(mainPathWidth, pathHeight, 65),
+            pathMat
+        );
+        mainPath.position.set(0, 0.15, 29.5);
+        gardenGroup.add(mainPath);
+
+        // Central path borders
+        const mainBorder1 = new THREE.Mesh(
+            new THREE.BoxGeometry(0.5, pathHeight + 0.1, 65),
+            pathBorderMat
+        );
+        mainBorder1.position.set(-mainPathWidth / 2 - 0.25, 0.2, 29.5);
+        gardenGroup.add(mainBorder1);
+
+        const mainBorder2 = new THREE.Mesh(
+            new THREE.BoxGeometry(0.5, pathHeight + 0.1, 65),
+            pathBorderMat
+        );
+        mainBorder2.position.set(mainPathWidth / 2 + 0.25, 0.2, 29.5);
+        gardenGroup.add(mainBorder2);
+
+        // Horizontal path
+        const crossPath = new THREE.Mesh(
+            new THREE.BoxGeometry(120, pathHeight, 8),
+            pathMat
+        );
+        crossPath.position.set(0, 0.15, 25);
+        gardenGroup.add(crossPath);
+
+        // Horizontal path borders
+        const crossBorder1 = new THREE.Mesh(
+            new THREE.BoxGeometry(120, pathHeight + 0.1, 0.5),
+            pathBorderMat
+        );
+        crossBorder1.position.set(0, 0.2, 25 - 4);
+        gardenGroup.add(crossBorder1);
+
+        const crossBorder2 = new THREE.Mesh(
+            new THREE.BoxGeometry(120, pathHeight + 0.1, 0.5),
+            pathBorderMat
+        );
+        crossBorder2.position.set(0, 0.2, 25 + 4);
+        gardenGroup.add(crossBorder2);
+
+        // Circular path
+        const circleSegments = 48;
+        const circleRadius = 13;
+        const pathWidth = 3.5;
+
+        for (let i = 0; i < circleSegments; i++) {
+            const angle = (i / circleSegments) * Math.PI * 2;
+            const x = Math.cos(angle) * circleRadius;
+            const z = Math.sin(angle) * circleRadius;
+
+            const segment = new THREE.Mesh(
+                new THREE.BoxGeometry(pathWidth, pathHeight, 2),
+                pathMat
+            );
+            segment.position.set(x, 0.15, z + 25);
+            segment.rotation.y = angle + Math.PI / 2;
+            gardenGroup.add(segment);
+        }
+
+        // Inkwell statue
+        // Base platform
+        const inkwellBase = new THREE.Mesh(
+            new THREE.CylinderGeometry(11, 12, 1.5, 16),
+            stoneMat
+        );
+        inkwellBase.position.set(0, 0.75, 25);
+        gardenGroup.add(inkwellBase);
+
+        // Lower pedestal
+        const lowerPedestal = new THREE.Mesh(
+            new THREE.CylinderGeometry(4.5, 5, 2, 16),
+            stoneMat
+        );
+        lowerPedestal.position.set(0, 2.5, 25);
+        gardenGroup.add(lowerPedestal);
+
+        // Gold decorative band
+        const goldBand1 = new THREE.Mesh(
+            new THREE.CylinderGeometry(4.7, 4.7, 0.5, 16),
+            goldMat
+        );
+        goldBand1.position.set(0, 3.5, 25);
+        gardenGroup.add(goldBand1);
+
+        // Main inkwell body
+        const inkwellBody = new THREE.Mesh(
+            new THREE.BoxGeometry(6, 4, 6),
+            goldMat
+        );
+        inkwellBody.position.set(0, 5.5, 25);
+        gardenGroup.add(inkwellBody);
+
+        // Decorations
+        for (let i = 0; i < 4; i++) {
+            const angle = (i / 4) * Math.PI * 2;
+            const xOffset = i % 2 === 0 ? Math.sin(angle) * 3.1 : 0;
+            const zOffset = i % 2 === 1 ? Math.cos(angle) * 3.1 : 0;
+
+            const panel = new THREE.Mesh(
+                new THREE.BoxGeometry(i % 2 === 0 ? 0.3 : 6.2, 3.5, i % 2 === 1 ? 0.3 : 6.2),
+                new THREE.MeshPhongMaterial({color: 0xAA8B3A})
+            );
+            panel.position.set(xOffset, 5.5, 25 + zOffset);
+            gardenGroup.add(panel);
+        }
+
+        for (let i = 0; i < 3; i++) {
+            const bandY = 4 + i * 1.5;
+            const band = new THREE.Mesh(
+                new THREE.BoxGeometry(6.3, 0.25, 6.3),
+                new THREE.MeshPhongMaterial({color: 0xC4A650})
+            );
+            band.position.set(0, bandY, 25);
+            gardenGroup.add(band);
+        }
+
+        // Shoulder
+        const shoulder = new THREE.Mesh(
+            new THREE.CylinderGeometry(2.2, 3, 1, 8),
+            goldMat
+        );
+        shoulder.position.set(0, 8, 25);
+        gardenGroup.add(shoulder);
+
+        // Neck
+        const inkwellNeck = new THREE.Mesh(
+            new THREE.CylinderGeometry(2, 2, 2, 16),
+            goldMat
+        );
+        inkwellNeck.position.set(0, 9.5, 25);
+        gardenGroup.add(inkwellNeck);
+
+        // Decorative rings
+        for (let i = 0; i < 2; i++) {
+            const ring = new THREE.Mesh(
+                new THREE.CylinderGeometry(2.1, 2.1, 0.2, 16),
+                new THREE.MeshPhongMaterial({color: 0xAA8B3A})
+            );
+            ring.position.set(0, 9 + i, 25);
+            gardenGroup.add(ring);
+        }
+
+        // Cap
+        const capBase = new THREE.Mesh(
+            new THREE.CylinderGeometry(2.3, 2.1, 0.6, 16),
+            new THREE.MeshPhongMaterial({color: 0xC0C0C0, shininess: 80})
+        );
+        capBase.position.set(0, 10.5, 25);
+        gardenGroup.add(capBase);
+
+        // Ridges on cap
+        for (let i = 0; i < 4; i++) {
+            const ridge = new THREE.Mesh(
+                new THREE.CylinderGeometry(2.35, 2.35, 0.1, 16),
+                new THREE.MeshPhongMaterial({color: 0xA8A8A8})
+            );
+            ridge.position.set(0, 10.3 + i * 0.15, 25);
+            gardenGroup.add(ridge);
+        }
+
+        // Pillars around base
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+
+            const pillar = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.4, 0.5, 2.5, 12),
+                stoneMat
+            );
+            pillar.position.set(
+                Math.cos(angle) * 8,
+                2.25,
+                25 + Math.sin(angle) * 8
+            );
+            gardenGroup.add(pillar);
+
+            const pillarCap = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.6, 0.5, 0.4, 12),
+                goldMat
+            );
+            pillarCap.position.set(
+                Math.cos(angle) * 8,
+                3.7,
+                25 + Math.sin(angle) * 8
+            );
+            gardenGroup.add(pillarCap);
+
+            const pillarTop = new THREE.Mesh(
+                new THREE.SphereGeometry(0.6, 12, 12),
+                goldMat
+            );
+            pillarTop.position.set(
+                Math.cos(angle) * 8,
+                4.3,
+                25 + Math.sin(angle) * 8
+            );
+            gardenGroup.add(pillarTop);
+        }
+
+        // Trees
+        const treePositions = [
+            [-50, 0, 35], [-50, 0, 10],
+            [50, 0, 35], [50, 0, 10],
+            [-35, 0, 45], [35, 0, 45],
+            [-35, 0, -5], [35, 0, -5]
+        ];
+
+        treePositions.forEach(pos => {
+            // Trunk
+            const trunk = addEdges(new THREE.Mesh(
+                new THREE.CylinderGeometry(0.8, 1, 8, 8),
+                trunkMat
+            ));
+            trunk.position.set(pos[0], pos[1] + 4, pos[2]);
+            gardenGroup.add(trunk);
+
+            // Foliage
+            const leaves1 = addEdges(new THREE.Mesh(
+                new THREE.ConeGeometry(4, 8, 8),
+                leafMat
+            ));
+            leaves1.position.set(pos[0], pos[1] + 10, pos[2]);
+            gardenGroup.add(leaves1);
+
+            const leaves2 = addEdges(new THREE.Mesh(
+                new THREE.ConeGeometry(3.5, 6, 8),
+                leafMat
+            ));
+            leaves2.position.set(pos[0], pos[1] + 14, pos[2]);
+            gardenGroup.add(leaves2);
+
+            const leaves3 = addEdges(new THREE.Mesh(
+                new THREE.ConeGeometry(2.5, 4, 8),
+                leafMat
+            ));
+            leaves3.position.set(pos[0], pos[1] + 17, pos[2]);
+            gardenGroup.add(leaves3);
+        });
+
+        // Bushes
+        const bushPositions = [
+            [-20, 0, 40], [20, 0, 40],
+            [-45, 0, 25], [-30, 0, 25], [30, 0, 25], [45, 0, 25],
+            [-45, 0, 15], [45, 0, 15]
+        ];
+
+        bushPositions.forEach(pos => {
+            const bush = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(3, 2.5, 3),
+                bushMat
+            ));
+            bush.position.set(pos[0], pos[1] + 1.25, pos[2]);
+            gardenGroup.add(bush);
+
+            const bushTop = addEdges(new THREE.Mesh(
+                new THREE.SphereGeometry(1.8, 12, 12, 0, Math.PI * 2, 0, Math.PI / 2),
+                bushMat
+            ));
+            bushTop.position.set(pos[0], pos[1] + 2.5, pos[2]);
+            gardenGroup.add(bushTop);
+        });
+
+        // Benches
+        const benchPositions = [
+            [-20, 0, 17], [20, 0, 17],
+            [-38, 0, 17], [38, 0, 17],
+        ];
+
+        benchPositions.forEach(pos => {
+            const seat = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(5, 0.4, 2),
+                stoneMat
+            ));
+            seat.position.set(pos[0], pos[1] + 1.2, pos[2]);
+            gardenGroup.add(seat);
+
+            const back = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(5, 2, 0.3),
+                stoneMat
+            ));
+            back.position.set(pos[0], pos[1] + 2, pos[2] - 0.85);
+            gardenGroup.add(back);
+
+            for (let side of [-1, 1]) {
+                const leg1 = addEdges(new THREE.Mesh(
+                    new THREE.BoxGeometry(0.3, 1.2, 0.3),
+                    stoneMat
+                ));
+                leg1.position.set(pos[0] + side * 2, pos[1] + 0.6, pos[2] - 0.7);
+                gardenGroup.add(leg1);
+
+                const leg2 = addEdges(new THREE.Mesh(
+                    new THREE.BoxGeometry(0.3, 1.2, 0.3),
+                    stoneMat
+                ));
+                leg2.position.set(pos[0] + side * 2, pos[1] + 0.6, pos[2] + 0.7);
+                gardenGroup.add(leg2);
+            }
+
+            const decoration = addEdges(new THREE.Mesh(
+                new THREE.SphereGeometry(0.3, 8, 8),
+                goldMat
+            ));
+            decoration.position.set(pos[0], pos[1] + 3, pos[2] - 0.85);
+            gardenGroup.add(decoration);
+        });
+
+        scene.add(gardenGroup);
+    }
+
+    createGarden();
+
+    function drawMainBuilding() {
+        const building = new THREE.Group();
+
+        // Main central body
+        const mainBody = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(70, 22, 20),
+            redWallMat
+        ));
+        mainBody.position.set(0, 11, -5);
+        building.add(mainBody);
+
+        // Foundation
+        const base = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(74, 1.5, 24),
+            grayMat
+        ));
+        base.position.set(0, 0.75, -5);
+        building.add(base);
+
+        // Steps leading to entrance
+        for (let i = 0; i < 3; i++) {
+            const step = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(72 - i * 2, 0.4, 2),
+                grayMat
+            ));
+            step.position.set(0, 0.2 + i * 0.4, 6 + i);
+            building.add(step);
+        }
+
+        // Colonnade
+        const colPosX = [-28, -20, -12, -4, 4, 12, 20, 28];
+        for (let i = 0; i < colPosX.length; i++) {
+            const x = colPosX[i];
+
+            // Column base
+            const colBase = addEdges(new THREE.Mesh(
+                new THREE.CylinderGeometry(1, 1.2, 1, 16),
+                whiteMat
+            ));
+            colBase.position.set(x, 2.5, 7);
+            building.add(colBase);
+
+            // Gold ring
+            const goldRing = addEdges(new THREE.Mesh(
+                new THREE.TorusGeometry(1.1, 0.1, 8, 16),
+                goldMat
+            ));
+            goldRing.rotation.x = Math.PI / 2;
+            goldRing.position.set(x, 2.5, 7);
+            building.add(goldRing);
+
+            // Column shaft
+            const column = addEdges(new THREE.Mesh(
+                new THREE.CylinderGeometry(0.9, 0.95, 16, 20),
+                whiteMat
+            ));
+            column.position.set(x, 11, 7);
+            building.add(column);
+
+            // Capital
+            const capital = addEdges(new THREE.Mesh(
+                new THREE.CylinderGeometry(1.3, 1, 1.5, 16),
+                whiteMat
+            ));
+            capital.position.set(x, 19.5, 7);
+            building.add(capital);
+
+            // Gold decoration on capital
+            const capitalDecor = addEdges(new THREE.Mesh(
+                new THREE.CylinderGeometry(1.35, 1.35, 0.3, 16),
+                goldMat
+            ));
+            capitalDecor.position.set(x, 20.2, 7);
+            building.add(capitalDecor);
+
+            // Abacus
+            const abacus = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(1.8, 0.4, 1.8),
+                whiteMat
+            ));
+            abacus.position.set(x, 20.5, 7);
+            building.add(abacus);
+        }
+
+        // Entablure
+        const architrave = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(72, 1.5, 3),
+            whiteMat
+        ));
+        architrave.position.set(0, 21.5, 7.5);
+        building.add(architrave);
+
+        // Frieze
+        const frieze = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(72, 2, 2.5),
+            grayMat
+        ));
+        frieze.position.set(0, 23.5, 7.5);
+        building.add(frieze);
+
+        // Gold decorative elements
+        for (let i = -32; i <= 32; i += 8) {
+            const friezeDecor = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(1, 0.8, 0.5),
+                goldMat
+            ));
+            friezeDecor.position.set(i, 23.5, 9);
+            building.add(friezeDecor);
+        }
+
+        // Cornice
+        const cornice = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(74, 1, 4),
+            grayMat
+        ));
+        cornice.position.set(0, 25, 8);
+        building.add(cornice);
+
+        // Cornice decorative
+        for (let i = -34; i <= 34; i += 6) {
+            const triangle = addEdges(new THREE.Mesh(
+                new THREE.CylinderGeometry(0.5, 0.5, 1, 3),
+                grayMat
+            ));
+            triangle.rotation.z = Math.PI / 2;
+            triangle.position.set(i, 25.5, 9.5);
+            building.add(triangle);
+
+            const goldAccent = addEdges(new THREE.Mesh(
+                new THREE.SphereGeometry(0.3, 8, 8),
+                goldMat
+            ));
+            goldAccent.position.set(i, 26, 9.5);
+            building.add(goldAccent);
+        }
+
+        // Pediment
+        const pedimentShape = new THREE.Shape();
+        pedimentShape.moveTo(-34, 0);
+        pedimentShape.lineTo(34, 0);
+        pedimentShape.lineTo(0, 12);
+        pedimentShape.lineTo(-34, 0);
+
+        const pedimentGeom = new THREE.ExtrudeGeometry(pedimentShape, {
+            depth: 3,
+            bevelEnabled: false
+        });
+        const pediment = addEdges(new THREE.Mesh(pedimentGeom, grayMat));
+        pediment.position.set(0, 25.5, 8.5);
+        building.add(pediment);
+
+        // Pediment relief decoration
+        for (let i = -4; i <= 4; i++) {
+            const decoration = addEdges(new THREE.Mesh(
+                new THREE.SphereGeometry(0.7, 12, 12),
+                goldMat
+            ));
+            decoration.position.set(i * 3.5, 30 - Math.abs(i) * 0.9, 10);
+            building.add(decoration);
+        }
+
+        // Central pediment ornament
+        const centralOrnament = addEdges(new THREE.Mesh(
+            new THREE.SphereGeometry(1.2, 16, 16),
+            goldMat
+        ));
+        centralOrnament.position.set(0, 36.5, 10);
+        building.add(centralOrnament);
+
+        // Gold decorative scrollwork
+        for (let i = -2; i <= 2; i += 2) {
+            const scroll = addEdges(new THREE.Mesh(
+                new THREE.TorusGeometry(1.5, 0.3, 8, 16),
+                goldMat
+            ));
+            scroll.position.set(i * 8, 32, 10);
+            building.add(scroll);
+        }
+
+        // Side wings
+        const leftWing = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(14, 20, 18),
+            redWallMat
+        ));
+        leftWing.position.set(-42, 10, -6);
+        building.add(leftWing);
+
+        const rightWing = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(14, 20, 18),
+            redWallMat
+        ));
+        rightWing.position.set(42, 10, -6);
+        building.add(rightWing);
+
+        // Wing cornices
+        const leftWingCornice = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(15, 1, 19),
+            grayMat
+        ));
+        leftWingCornice.position.set(-42, 20.5, -6);
+        building.add(leftWingCornice);
+
+        const leftCorniceGold = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(15, 0.3, 19),
+            goldMat
+        ));
+        leftCorniceGold.position.set(-42, 21, -6);
+        building.add(leftCorniceGold);
+
+        const rightWingCornice = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(15, 1, 19),
+            grayMat
+        ));
+        rightWingCornice.position.set(42, 20.5, -6);
+        building.add(rightWingCornice);
+
+        const rightCorniceGold = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(15, 0.3, 19),
+            goldMat
+        ));
+        rightCorniceGold.position.set(42, 21, -6);
+        building.add(rightCorniceGold);
+
+        // TOWERS
+        // Left Tower
+        const leftTower = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(10, 14, 10),
+            darkRedMat
+        ));
+        leftTower.position.set(-42, 28, -6);
+        building.add(leftTower);
+
+        // Gold bands on tower
+        for (let i = 0; i < 3; i++) {
+            const band = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(11, 0.4, 11),
+                goldMat
+            ));
+            band.position.set(-42, 23 + i * 4, -6);
+            building.add(band);
+        }
+
+        const leftTowerTop = addEdges(new THREE.Mesh(
+            new THREE.CylinderGeometry(4, 5, 6, 8),
+            roofMat
+        ));
+        leftTowerTop.position.set(-42, 38, -6);
+        building.add(leftTowerTop);
+
+        // Gold band on tower top
+        const leftTowerBand = addEdges(new THREE.Mesh(
+            new THREE.CylinderGeometry(4.2, 4.2, 0.5, 8),
+            goldMat
+        ));
+        leftTowerBand.position.set(-42, 35.5, -6);
+        building.add(leftTowerBand);
+
+        const leftSpire = addEdges(new THREE.Mesh(
+            new THREE.ConeGeometry(2.5, 5, 8),
+            darkRedMat
+        ));
+        leftSpire.position.set(-42, 43, -6);
+        building.add(leftSpire);
+
+        const leftOrnament = addEdges(new THREE.Mesh(
+            new THREE.SphereGeometry(1.2, 16, 16),
+            goldMat
+        ));
+        leftOrnament.position.set(-42, 46.5, -6);
+        building.add(leftOrnament);
+
+        // Decorative spikes
+        for (let i = 0; i < 4; i++) {
+            const spike = addEdges(new THREE.Mesh(
+                new THREE.ConeGeometry(0.3, 1.5, 8),
+                goldMat
+            ));
+            const angle = (i * Math.PI) / 2;
+            spike.position.set(-42 + Math.cos(angle) * 1.5, 46.5, -6 + Math.sin(angle) * 1.5);
+            building.add(spike);
+        }
+
+        // Right Tower
+        const rightTower = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(10, 14, 10),
+            darkRedMat
+        ));
+        rightTower.position.set(42, 28, -6);
+        building.add(rightTower);
+
+        for (let i = 0; i < 3; i++) {
+            const band = addEdges(new THREE.Mesh(
+                new THREE.BoxGeometry(11, 0.4, 11),
+                goldMat
+            ));
+            band.position.set(42, 23 + i * 4, -6);
+            building.add(band);
+        }
+
+        const rightTowerTop = addEdges(new THREE.Mesh(
+            new THREE.CylinderGeometry(4, 5, 6, 8),
+            roofMat
+        ));
+        rightTowerTop.position.set(42, 38, -6);
+        building.add(rightTowerTop);
+
+        const rightTowerBand = addEdges(new THREE.Mesh(
+            new THREE.CylinderGeometry(4.2, 4.2, 0.5, 8),
+            goldMat
+        ));
+        rightTowerBand.position.set(42, 35.5, -6);
+        building.add(rightTowerBand);
+
+        const rightSpire = addEdges(new THREE.Mesh(
+            new THREE.ConeGeometry(2.5, 5, 8),
+            darkRedMat
+        ));
+        rightSpire.position.set(42, 43, -6);
+        building.add(rightSpire);
+
+        const rightOrnament = addEdges(new THREE.Mesh(
+            new THREE.SphereGeometry(1.2, 16, 16),
+            goldMat
+        ));
+        rightOrnament.position.set(42, 46.5, -6);
+        building.add(rightOrnament);
+
+        for (let i = 0; i < 4; i++) {
+            const spike = addEdges(new THREE.Mesh(
+                new THREE.ConeGeometry(0.3, 1.5, 8),
+                goldMat
+            ));
+            const angle = (i * Math.PI) / 2;
+            spike.position.set(42 + Math.cos(angle) * 1.5, 46.5, -6 + Math.sin(angle) * 1.5);
+            building.add(spike);
+        }
+
+        // Windows on main body
+        for (let row = 0; row < 2; row++) {
+            for (let col = 0; col < 6; col++) {
+                const x = -25 + col * 10;
+                const y = 8 + row * 8;
+
+                const windowFrame = addEdges(new THREE.Mesh(
+                    new THREE.BoxGeometry(3, 5.5, 0.5),
+                    whiteMat
+                ));
+                windowFrame.position.set(x, y, 5.2);
+                building.add(windowFrame);
+
+                const windowGlass = new THREE.Mesh(
+                    new THREE.BoxGeometry(2.6, 5, 0.3),
+                    windowGlowMat
+                );
+                windowGlass.position.set(x, y, 5.4);
+                building.add(windowGlass);
+
+                const windowLight = new THREE.PointLight(0xFFE88C, 1, 15);
+                windowLight.position.set(x, y, 5.5);
+                building.add(windowLight);
+
+                const windowTrim = addEdges(new THREE.Mesh(
+                    new THREE.BoxGeometry(3.2, 0.3, 0.5),
+                    goldMat
+                ));
+                windowTrim.position.set(x, y + 2.9, 5.4);
+                building.add(windowTrim);
+            }
+        }
+
+        // Windows on side wings
+        for (let side = 0; side < 2; side++) {
+            const xPos = side === 0 ? -42 : 42;
+            for (let i = 0; i < 3; i++) {
+                const window1 = addEdges(new THREE.Mesh(
+                    new THREE.BoxGeometry(3, 4.5, 0.5),
+                    whiteMat
+                ));
+                window1.position.set(xPos, 6 + i * 6, 2.6);
+                building.add(window1);
+
+                const glass = new THREE.Mesh(
+                    new THREE.BoxGeometry(2.6, 4, 0.3),
+                    windowGlowMat
+                );
+                glass.position.set(xPos, 6 + i * 6, 2.7);
+                building.add(glass);
+
+                const light = new THREE.PointLight(0xFFE88C, 0.8, 12);
+                light.position.set(xPos, 6 + i * 6, 2.8);
+                building.add(light);
+            }
+        }
+
+        // Tower windows
+        for (let side = 0; side < 2; side++) {
+            const xPos = side === 0 ? -42 : 42;
+            for (let i = 0; i < 2; i++) {
+                const towerWindow = addEdges(new THREE.Mesh(
+                    new THREE.BoxGeometry(2, 3, 0.5),
+                    whiteMat
+                ));
+                towerWindow.position.set(xPos, 24 + i * 5, -0.5);
+                building.add(towerWindow);
+
+                const glass = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.7, 2.7, 0.4),
+                    windowGlowMat
+                );
+                glass.position.set(xPos, 24 + i * 5, -0.4);
+                building.add(glass);
+
+                const light = new THREE.PointLight(0xFFE88C, 0.7, 10);
+                light.position.set(xPos, 24 + i * 5, -0.2);
+                building.add(light);
+            }
+        }
+
+        // Entrance arches
+        for (let i = -1; i <= 1; i++) {
+            const archCurve = new THREE.Shape();
+            archCurve.moveTo(-1.5, 0);
+            archCurve.lineTo(-1.5, 3);
+            archCurve.quadraticCurveTo(-1.5, 5, 0, 5);
+            archCurve.quadraticCurveTo(1.5, 5, 1.5, 3);
+            archCurve.lineTo(1.5, 0);
+            archCurve.lineTo(-1.5, 0);
+
+            const archGeom = new THREE.ExtrudeGeometry(archCurve, {
+                depth: 1,
+                bevelEnabled: false
+            });
+            const arch = addEdges(new THREE.Mesh(archGeom, whiteMat));
+            arch.position.set(i * 8, 2, 5);
+            building.add(arch);
+
+            const archDecor = addEdges(new THREE.Mesh(
+                new THREE.TorusGeometry(1.5, 0.15, 8, 16, Math.PI),
+                goldMat
+            ));
+            archDecor.rotation.z = Math.PI;
+            archDecor.position.set(i * 8, 7, 5.5);
+            building.add(archDecor);
+
+            const door = new THREE.Mesh(
+                new THREE.BoxGeometry(2.8, 4.5, 0.3),
+                windowGlowMat
+            );
+            door.position.set(i * 8, 4.5, 5.8);
+            building.add(door);
+
+            const doorLight = new THREE.PointLight(0xFFE88C, 1.5, 10);
+            doorLight.position.set(i * 8, 4.5, 6);
+            building.add(doorLight);
+        }
+
+        // Balcony
+        const balcony = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(26, 0.5, 2),
+            whiteMat
+        ));
+        balcony.position.set(0, 15, 6);
+        building.add(balcony);
+
+        // Balcony railing
+        for (let i = -12; i <= 12; i += 2) {
+            const baluster = addEdges(new THREE.Mesh(
+                new THREE.CylinderGeometry(0.15, 0.15, 1.5, 8),
+                goldMat
+            ));
+            baluster.position.set(i, 16, 6.8);
+            building.add(baluster);
+        }
+
+        const balconyRail = addEdges(new THREE.Mesh(
+            new THREE.BoxGeometry(26, 0.3, 0.3),
+            goldMat
+        ));
+        balconyRail.position.set(0, 17, 6.8);
+        building.add(balconyRail);
+
+        scene.add(building);
+    }
+
+    drawMainBuilding();
+
+    // // Camera controls
+    // function setupControls() {
+    //     let isRotating = false;
+    //     let isPanning = false;
+    //     let previousMousePosition = {x: 0, y: 0};
+    //     const rotationSpeed = 0.005;
+    //     const panSpeed = 0.05;
+    //
+    //     renderer.domElement.addEventListener('mousedown', (e) => {
+    //         if (e.button === 0) isRotating = true;
+    //         else if (e.button === 2) isPanning = true;
+    //         previousMousePosition = {x: e.clientX, y: e.clientY};
+    //         e.preventDefault();
+    //     });
+    //
+    //     renderer.domElement.addEventListener('mouseup', () => {
+    //         isRotating = false;
+    //         isPanning = false;
+    //     });
+    //
+    //     renderer.domElement.addEventListener('mousemove', (e) => {
+    //         const deltaMove = {
+    //             x: e.clientX - previousMousePosition.x,
+    //             y: e.clientY - previousMousePosition.y
+    //         };
+    //
+    //         if (isRotating) {
+    //             const offset = new THREE.Vector3();
+    //             offset.copy(camera.position).sub(new THREE.Vector3(0, 15, 0));
+    //
+    //             const spherical = new THREE.Spherical();
+    //             spherical.setFromVector3(offset);
+    //
+    //             spherical.theta -= deltaMove.x * rotationSpeed;
+    //             spherical.phi -= deltaMove.y * rotationSpeed;
+    //             spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+    //
+    //             offset.setFromSpherical(spherical);
+    //             camera.position.copy(new THREE.Vector3(0, 15, 0)).add(offset);
+    //             camera.lookAt(0, 15, 0);
+    //
+    //         } else if (isPanning) {
+    //             const direction = new THREE.Vector3();
+    //             camera.getWorldDirection(direction);
+    //             const right = new THREE.Vector3().crossVectors(direction, camera.up);
+    //
+    //             const moveX = right.multiplyScalar(-deltaMove.x * panSpeed);
+    //             const moveY = camera.up.clone().multiplyScalar(deltaMove.y * panSpeed);
+    //
+    //             camera.position.add(moveX);
+    //             camera.position.add(moveY);
+    //         }
+    //
+    //         previousMousePosition = {x: e.clientX, y: e.clientY};
+    //     });
+    //
+    //     renderer.domElement.addEventListener('wheel', (e) => {
+    //         const zoomSpeed = 0.5;
+    //         const direction = new THREE.Vector3();
+    //         camera.getWorldDirection(direction);
+    //         const factor = e.deltaY * zoomSpeed * 0.01;
+    //         camera.position.addScaledVector(direction, -factor);
+    //         e.preventDefault();
+    //     });
+    //
+    //     renderer.domElement.addEventListener('contextmenu', (e) => {
+    //         e.preventDefault();
+    //     });
+    // }
+
+    // setupControls();
+
+    function animate() {
+        renderer.render(scene, camera);
+    }
+
+    renderer.setAnimationLoop(animate);
+
+    // window.addEventListener('resize', () => {
+    //     camera.aspect = window.innerWidth / window.innerHeight;
+    //     camera.updateProjectionMatrix();
+    //     renderer.setSize(window.innerWidth, window.innerHeight);
+    // });
+</script>
+</body>
+</html>
+

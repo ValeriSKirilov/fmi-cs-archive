@@ -1,0 +1,305 @@
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script type="importmap">
+        { "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+        } }
+    </script>
+</head>
+
+<body>
+<script type="module">
+
+    import * as THREE from "three";
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    var scene = new THREE.Scene();
+
+    scene.background = new THREE.Color(0x559AA6);
+
+    var aspect = window.innerWidth / window.innerHeight;
+    var camera = new THREE.PerspectiveCamera(30, aspect);
+    camera.position.set(-5, 0, 9);
+    camera.lookAt(6.2, 2, 0);
+
+    //**********************************************************//
+
+    function floorAndPavementRender() {
+
+        var floorPavement = new THREE.Group();
+
+        //floor - gray
+        var geometry = new THREE.BoxGeometry(50, 0, 50);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x696870
+        });
+        var floor = new THREE.Mesh(geometry, material);
+        floor.position.y = -0.5;
+        floorPavement.add(floor);
+
+        //pavementLeft - lightgray
+        var geometry = new THREE.BoxGeometry(4.5, 0.1, 1.9);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x999999
+        });
+        var pavement = new THREE.Mesh(geometry, material);
+        pavement.position.set(0, -0.5, 0.95);
+        floorPavement.add(pavement);
+
+        //pavementRight - brown-ish
+        var geometry = new THREE.BoxGeometry(11, 0.1, 1.9);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x625554
+        });
+        var pavement = new THREE.Mesh(geometry, material);
+        pavement.position.set(7.75, -0.5, 0.95);
+        floorPavement.add(pavement);
+
+        scene.add(floorPavement);
+    }
+
+    //**********************************************************//
+
+    floorAndPavementRender();
+
+    //**********************************************************//
+
+    function leftBuildingRender() {
+
+        var leftBuilding = new THREE.Group();
+
+        //mainBuildingLef
+        var geometry = new THREE.BoxGeometry(4.5, 4.6, 0.1);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0xEFE3CE
+        });
+        var mainBuilding = new THREE.Mesh(geometry, material);
+        mainBuilding.position.set(0, 1.7, 0);
+        leftBuilding.add(mainBuilding);
+
+        //leftPoster
+        for (var i = 0; i < 2; i++) {
+            var geometry = new THREE.BoxGeometry(0.5, 0.7, 0.1);
+            var material = new THREE.MeshBasicMaterial({
+                color: 0x8A8945
+            });
+            var leftPoster = new THREE.Mesh(geometry, material);
+            leftPoster.position.set(-0.3 + i * 0.4, 0.3, 0.05);
+            leftBuilding.add(leftPoster);
+        }
+
+        //rightPoster
+        for (var i = 0; i < 2; i++) {
+            var geometry = new THREE.BoxGeometry(0.5, 0.7, 0.1);
+            var material = new THREE.MeshBasicMaterial({
+                color: 0x473284
+            });
+            var rightPoster = new THREE.Mesh(geometry, material);
+            rightPoster.position.set(1 + i * 0.4, 0.3, 0.05);
+            leftBuilding.add(rightPoster);
+        }
+
+        scene.add(leftBuilding);
+    }
+
+    //**********************************************************//
+
+    leftBuildingRender();
+
+    //**********************************************************//
+
+    function rightBuildingRender() {
+
+        var rightBuilding = new THREE.Group();
+
+        //mainBuildingRightBack
+        var geometry = new THREE.BoxGeometry(11, 4.6, 0.1);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x9E7952 //0x352B29
+        });
+        var mainBuildingBack = new THREE.Mesh(geometry, material);
+        mainBuildingBack.position.set(7.75, 1.7, -0.1); //z to 0
+        scene.add(mainBuildingBack);
+
+        //mainBuildingFront
+        //leftGap
+        var geometry = new THREE.BoxGeometry(1.95, 4.6, 0.1);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x6E4511
+        });
+        var leftGap = new THREE.Mesh(geometry, material);
+        leftGap.position.set(3.25, 1.7, 0); // Positioned between x=4.5 (left building) and x=5.35 (door start)
+        scene.add(leftGap);
+
+        //topGap
+        var geometry = new THREE.BoxGeometry(9, 2.2, 0.1); // 9.7 width to match door width plus side walls
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x6E4511
+        });
+        var topGap = new THREE.Mesh(geometry, material);
+        topGap.position.set(8.7, 2.9, 0); // Positioned above y=3.9 (door/canopy top)
+        scene.add(topGap);
+
+        function doorRender() {
+
+            var door = new THREE.Group();
+
+            //doorGlass
+            var geometry = new THREE.BoxGeometry(9, 2.2, 0.1);
+            var material = new THREE.MeshStandardMaterial({
+                color: "white",
+                transparent: true,
+                opacity: 0.45,
+                roughness: 0.05,
+                metalness: 0.4,
+            });
+            var doorGlass = new THREE.Mesh(geometry, material);
+            doorGlass.position.set(8.7, 0.5, 0);
+            door.add(doorGlass);
+
+            scene.add(door);
+
+            //beamHorizontal
+            var geometry = new THREE.BoxGeometry(9, 0.15, 0.101);
+            var material = new THREE.MeshStandardMaterial({
+                color: "black",
+                metalness: 0.4
+            })
+            var beamHorizontal = new THREE.Mesh(geometry, material);
+            beamHorizontal.position.set(8.7, 0.8, 0);
+            door.add(beamHorizontal);
+
+            //beamsVerticalBig
+            for (var i = 0; i < 2; i++) {
+                var geometry = new THREE.BoxGeometry(0.15, 2.2, 0.15);
+                var material = new THREE.MeshStandardMaterial({
+                    color: "black",
+                    metalness: 0.4
+                })
+                var beamVerticalBig = new THREE.Mesh(geometry, material);
+                beamVerticalBig.position.set(6.5 + i * 4, 0.5, 0);
+                door.add(beamVerticalBig);
+            }
+
+            //beamsVerticalSmall
+            for (var i = 0; i < 23; i++) {
+                var geometry = new THREE.BoxGeometry(0.02, 2.2, 0.01);
+                var material = new THREE.MeshStandardMaterial({
+                    color: "black",
+                    metalness: 0.4
+                })
+                var beamVerticalBig = new THREE.Mesh(geometry, material);
+                beamVerticalBig.position.set(4.4 + i * 0.4, 0.5, 0.06);
+                door.add(beamVerticalBig);
+            }
+        }
+
+        doorRender();
+
+        //canopy
+        var geometry = new THREE.BoxGeometry(9.9, 0.2, 2.7);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x1E1515 //0x8998A4
+        });
+        var canopy = new THREE.Mesh(geometry, material);
+        canopy.position.set(9.2, 1.7, 1);
+        scene.add(canopy);
+    }
+
+    //**********************************************************//
+
+    rightBuildingRender();
+
+    //**********************************************************//
+
+    //FRB - Furthest Right Building
+
+    function FRBandSignRender() {
+        var furthestRightBuildingPlusSign = new THREE.Group();
+
+        //furthestRightBuilding
+        var geometry = new THREE.BoxGeometry(3, 4, 5);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0xD18320
+        });
+        var furthestRightBuilding = new THREE.Mesh(geometry, material);
+        furthestRightBuilding.position.set(14.7, 0.5, -0.6);
+        furthestRightBuildingPlusSign.add(furthestRightBuilding);
+
+        //sign
+        var geometry = new THREE.BoxGeometry(0.2, 6, 1);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0xFBFBED //0x031B39
+        });
+        var sign = new THREE.Mesh(geometry, material);
+        sign.position.set(13.7, 4.4, 2.1); //3.95
+        furthestRightBuildingPlusSign.add(sign);
+
+        //redBanner
+        var geometry = new THREE.BoxGeometry(0.06, 5.85, 0.56);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x000000,
+            metalness: 0.1
+        });
+        var redBanner = new THREE.Mesh(geometry, material);
+        redBanner.position.set(13.6, 4.39, 2.29);
+        furthestRightBuildingPlusSign.add(redBanner);
+
+        //splittingLines
+        var geometry = new THREE.BoxGeometry(0.37, 0.05, 1.2);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0xC7220D
+        });
+        for (let i = 0; i < 8; i++) {
+            var splittingLines = new THREE.Mesh(geometry, material);
+            splittingLines.position.set(13.68, 1.95 + i * 0.68, 2.15);
+            furthestRightBuildingPlusSign.add(splittingLines);
+        }
+
+        //signPillar
+        var geometry = new THREE.CylinderGeometry(0.03, 0.03, 6.35, 64, 64)
+        var material = new THREE.MeshBasicMaterial({
+            color: 0xF1E3D0
+        });
+        var signPillar = new THREE.Mesh(geometry, material);
+        signPillar.position.set(13.7, 4.57, 2.68);
+        furthestRightBuildingPlusSign.add(signPillar);
+
+        furthestRightBuildingPlusSign.position.set(1, 0, 0);
+
+        scene.add(furthestRightBuildingPlusSign);
+    }
+
+    //**********************************************************//
+
+    FRBandSignRender();
+
+    var light = new THREE.PointLight('white', 200);
+    light.position.set(3, 3, 8);
+    scene.add(light);
+
+    var light = new THREE.PointLight('white', 300);
+    light.position.set(12, 5, 4);
+    scene.add(light);
+
+    renderer.render(scene, camera);
+
+</script>
+</body>
+
+</html>

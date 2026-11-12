@@ -1,0 +1,91 @@
+﻿<html>
+
+<head>
+	<style>
+		body {
+			margin: 0;
+			overflow: hidden;
+		}
+
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+	<script type="importmap">
+			{ "imports": {
+				"three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+			} }
+		</script>
+</head>
+
+<body>
+	<script type="module">
+
+		import * as THREE from "three";
+
+		// Задача: нарисувайте цветно хапче-капсула,
+		// с издължено тяло, със заоблени краища, като
+		// се върти хапчето, а не цялата сцена, за да
+		// не се движи и камерата
+
+
+		var renderer = new THREE.WebGLRenderer();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.setAnimationLoop(drawFrame);
+		document.body.appendChild(renderer.domElement);
+
+		var scene = new THREE.Scene();
+		//scene.background = new THREE.Color('gray');
+
+		var aspect = window.innerWidth / window.innerHeight;
+		var camera = new THREE.PerspectiveCamera(30, aspect);
+		camera.position.set(0, 0, 20);
+		camera.lookAt(scene.position);
+
+		// Хапчето като един обект
+		var pill = new THREE.Group();
+
+		var geometry = new THREE.CylinderGeometry(1, 1, 2.5, 16);
+		var material = new THREE.MeshPhongMaterial({ color: 'red' });
+		var cylinderRed = new THREE.Mesh(geometry, material);
+		cylinderRed.position.set(0, 1.25, 0);
+
+		pill.add(cylinderRed);
+
+		var geometry = new THREE.CylinderGeometry(1, 1, 2.5, 16);
+		var material = new THREE.MeshPhongMaterial({ color: 'yellow' });
+		var cylinderYellow = new THREE.Mesh(geometry, material);
+		cylinderYellow.position.set(0, -1.25, 0);
+
+		pill.add(cylinderYellow);
+
+		var geometry = new THREE.SphereGeometry(1, 16, 16);
+		var material = new THREE.MeshPhongMaterial({ color: 'red' });
+		var sphere1 = new THREE.Mesh(geometry, material);
+		sphere1.position.set(0, 2.5, 0);
+		pill.add(sphere1);
+
+		var geometry = new THREE.SphereGeometry(1, 16, 16);
+		var material = new THREE.MeshPhongMaterial({ color: 'yellow' });
+		var sphere2 = new THREE.Mesh(geometry, material);
+		sphere2.position.set(0, -2.5, 0);
+		pill.add(sphere2);
+
+		scene.add(pill);
+
+		function drawFrame(t) {
+			pill.rotation.x = t / 1000;
+			pill.rotation.z = t / 1200;
+			renderer.render(scene, camera);
+		}
+
+		// Светлина
+		var light = new THREE.PointLight('white', 700);
+		light.position.set(0, 0, 20);
+		scene.add(light);
+
+	</script>
+</body>
+
+</html>
