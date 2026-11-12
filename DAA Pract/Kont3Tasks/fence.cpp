@@ -6,20 +6,16 @@ using namespace std;
 
 int dp[MAX][MAX];
 
-int main()
-{
-    int s;
-    cin >> s;
+int main() {
+  int s;
+  cin >> s;
 
-    dp[0][0] = 0;
+  dp[0][0] = 0;
 
-    for (int i = 1; i <= s; i++)
-    {
-        for (int j = 0; j <= i; j++)
-        {
-            
-        }
+  for (int i = 1; i <= s; i++) {
+    for (int j = 0; j <= i; j++) {
     }
+  }
 
-    return 0;
+  return 0;
 }

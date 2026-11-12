@@ -93,89 +93,74 @@ int n, k, r, a, par[MAX], d[MAX];
 vector<int> nodes[MAX];
 vector<pair<int, pair<int, int>>> edges;
 
-int find(int node)
-{
-    if (par[node] == 0)
-        return node;
+int find(int node) {
+  if (par[node] == 0) return node;
 
-    return par[node] = find(par[node]);
+  return par[node] = find(par[node]);
 }
 
-void myUnion(int u, int v)
-{
-    u = find(u);
-    v = find(v);
+void myUnion(int u, int v) {
+  u = find(u);
+  v = find(v);
 
-    if (u == v)
-        return;
+  if (u == v) return;
 
-    if (d[u] > d[v])
-        par[v] = u;
+  if (d[u] > d[v])
+    par[v] = u;
+  else {
+    par[u] = v;
+    if (d[u] == d[v]) d[v]++;
+  }
+}
+
+int cost(int u, int v) {
+  int idx1 = 0, idx2 = 0;
+
+  while (idx1 < nodes[u].size() && idx2 < nodes[v].size()) {
+    if (nodes[u][idx1] == nodes[v][idx2])
+      return nodes[u][idx1];
+    else if (nodes[u][idx1] < nodes[v][idx2])
+      idx1++;
     else
-    {
-        par[u] = v;
-        if (d[u] == d[v])
-            d[v]++;
-    }
+      idx2++;
+  }
+
+  return k + 1;
 }
 
-int cost(int u, int v)
-{
-    int idx1 = 0, idx2 = 0;
+int main() {
+  cin >> n >> k;
 
-    while (idx1 < nodes[u].size() && idx2 < nodes[v].size())
-    {
-        if (nodes[u][idx1] == nodes[v][idx2])
-            return nodes[u][idx1];
-        else if (nodes[u][idx1] < nodes[v][idx2])
-            idx1++;
-        else
-            idx2++;
+  for (int i = 1; i <= n; i++) {
+    cin >> r;
+
+    for (int j = 0; j < r; j++) {
+      cin >> a;
+      nodes[i].push_back(a);
     }
+  }
 
-    return k + 1;
-}
-
-int main()
-{
-    cin >> n >> k;
-
-    for (int i = 1; i <= n; i++)
-    {
-        cin >> r;
-
-        for (int j = 0; j < r; j++)
-        {
-            cin >> a;
-            nodes[i].push_back(a);
-        }
+  for (int i = 1; i <= n; i++) {
+    for (int j = i + 1; j <= n; j++) {
+      edges.push_back({cost(i, j), {i, j}});
     }
+  }
 
-    for (int i = 1; i <= n; i++)
-    {
-        for (int j = i + 1; j <= n; j++)
-        {
-            edges.push_back({cost(i, j), {i, j}});
-        }
+  sort(edges.begin(), edges.end());
+
+  int total_cost = 0;
+
+  for (int i = 0; i < edges.size(); i++) {
+    int u = edges[i].second.first;
+    int v = edges[i].second.second;
+
+    if (find(u) != find(v)) {
+      total_cost += edges[i].first;
+      myUnion(u, v);
     }
+  }
 
-    sort(edges.begin(), edges.end());
+  cout << total_cost << '\n';
 
-    int total_cost = 0;
-
-    for (int i = 0; i < edges.size(); i++)
-    {
-        int u = edges[i].second.first;
-        int v = edges[i].second.second;
-
-        if (find(u) != find(v))
-        {
-            total_cost += edges[i].first;
-            myUnion(u, v);
-        }
-    }
-
-    cout << total_cost << '\n';
-
-    return 0;
+  return 0;
 }

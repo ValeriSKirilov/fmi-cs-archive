@@ -8,41 +8,35 @@ using namespace std;
 
 long long dp[MAX];
 
-long long rec(int sum)
-{
-    if (sum < 0)
-        return 0;
+long long rec(int sum) {
+  if (sum < 0) return 0;
 
-    if (sum == 0)
-        return 1;
+  if (sum == 0) return 1;
 
-    if (dp[sum] != -1)
-        return dp[sum];
+  if (dp[sum] != -1) return dp[sum];
 
-    long long ways = 0;
-    for (int i = 1; i <= 6; i++)
-    {
-        ways += rec(sum - i);
-        ways %= MOD;
-    }
+  long long ways = 0;
+  for (int i = 1; i <= 6; i++) {
+    ways += rec(sum - i);
+    ways %= MOD;
+  }
 
-    return dp[sum] = ways;
+  return dp[sum] = ways;
 }
 
-int main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
+int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
 
-    int n;
-    cin >> n;
+  int n;
+  cin >> n;
 
-    fill(dp, dp + n + 5, -1);
+  fill(dp, dp + n + 5, -1);
 
-    rec(n);
+  rec(n);
 
-    cout << rec(n) << '\n';
+  cout << rec(n) << '\n';
 
-    return 0;
+  return 0;
 }

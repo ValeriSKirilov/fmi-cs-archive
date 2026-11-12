@@ -2,15 +2,11 @@
 
 using namespace std;
 
-struct Kid
-{
-    int id;
-    int R;
+struct Kid {
+  int id;
+  int R;
 
-    bool operator<(const Kid &other) const
-    {
-        return R > other.R;
-    }
+  bool operator<(const Kid &other) const { return R > other.R; }
 };
 
 #define MAX 1000005
@@ -20,53 +16,46 @@ int n;
 vector<vector<Kid>> starts_at(MAX);
 int ans[MAX];
 
-int main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
 
-    cin >> n;
+  cin >> n;
 
-    for (int i = 0; i < n; i++)
-    {
-        int L, R;
-        cin >> L >> R;
+  for (int i = 0; i < n; i++) {
+    int L, R;
+    cin >> L >> R;
 
-        starts_at[L].push_back({i, R});
+    starts_at[L].push_back({i, R});
+  }
+
+  priority_queue<Kid> pq;
+
+  for (int i = 1; i <= n; i++) {
+    for (Kid k : starts_at[i]) pq.push(k);
+
+    if (pq.empty()) {
+      cout << "NO\n";
+      return 0;
     }
 
-    priority_queue<Kid> pq;
+    Kid prio_kid = pq.top();
 
-    for (int i = 1; i <= n; i++)
-    {
-        for (Kid k : starts_at[i])
-            pq.push(k);
-
-        if (pq.empty())
-        {
-            cout << "NO\n";
-            return 0;
-        }
-
-        Kid prio_kid = pq.top();
-
-        if (prio_kid.R < i)
-        {
-            cout << "NO\n";
-            return 0;
-        }
-
-        ans[prio_kid.id] = i;
-        pq.pop();
+    if (prio_kid.R < i) {
+      cout << "NO\n";
+      return 0;
     }
 
-    cout << "YES\n";
+    ans[prio_kid.id] = i;
+    pq.pop();
+  }
 
-    for (int i = 0; i < n; i++)
-        cout << ans[i] << ' ';
+  cout << "YES\n";
 
-    cout << '\n';
+  for (int i = 0; i < n; i++) cout << ans[i] << ' ';
 
-    return 0;
+  cout << '\n';
+
+  return 0;
 }

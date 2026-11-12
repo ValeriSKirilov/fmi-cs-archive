@@ -8,33 +8,28 @@ int n, a[MAX], ans[MAX];
 
 stack<pair<int, int>> s;
 
-int main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
+int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
 
-    cin >> n;
-    for (int i = 1; i <= n; i++)
-        cin >> a[i];
+  cin >> n;
+  for (int i = 1; i <= n; i++) cin >> a[i];
 
-    s.push({INT_MIN, 0});
+  s.push({INT_MIN, 0});
 
-    for (int i = 1; i <= n; i++)
-    {
-        while (!s.empty() && s.top().first >= a[i])
-        {
-            s.pop();
-        }
-
-        ans[i] = s.top().second;
-        s.push({a[i], i});
+  for (int i = 1; i <= n; i++) {
+    while (!s.empty() && s.top().first >= a[i]) {
+      s.pop();
     }
 
-    for (int i = 1; i <= n; i++)
-        cout << ans[i] << " ";
+    ans[i] = s.top().second;
+    s.push({a[i], i});
+  }
 
-    cout << endl;
+  for (int i = 1; i <= n; i++) cout << ans[i] << " ";
 
-    return 0;
+  cout << endl;
+
+  return 0;
 }

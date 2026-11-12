@@ -6,25 +6,23 @@
 
 using namespace std;
 
-int main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(NULL);
+  cout.tie(NULL);
 
-    long long n, a;
+  long long n, a;
 
-    cin >> n;
+  cin >> n;
 
-    long long sum = 0;
+  long long sum = 0;
 
-    for (int i = 0; i < n; ++i)
-    {
-        cin >> a;
-        sum += a;
-    }
+  for (int i = 0; i < n; ++i) {
+    cin >> a;
+    sum += a;
+  }
 
-    cout << sum << '\n';
+  cout << sum << '\n';
 
-    return 0;
+  return 0;
 }

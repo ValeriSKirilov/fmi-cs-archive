@@ -8,61 +8,54 @@ int n, a, b, u, v, dist[MAX];
 vector<pair<int, int>> gr[MAX];
 bool used[MAX];
 
-void BFS01(int node)
-{
-    deque<pair<int, int>> q;
+void BFS01(int node) {
+  deque<pair<int, int>> q;
 
-    fill(dist, dist + n + 100, INT_MAX / 100);
-    dist[node] = 0;
-    q.push_back({dist[node], node});
+  fill(dist, dist + n + 100, INT_MAX / 100);
+  dist[node] = 0;
+  q.push_back({dist[node], node});
 
-    while (!q.empty())
-    {
-        node = q.front().second;
-        q.pop_front();
+  while (!q.empty()) {
+    node = q.front().second;
+    q.pop_front();
 
-        if (used[node])
-            continue;
-        used[node] = true;
+    if (used[node]) continue;
+    used[node] = true;
 
-        for (auto e : gr[node])
-        {
-            int u = e.first;
-            if (dist[u] > dist[node] + e.second)
-            {
-                dist[u] = dist[node] + e.second;
+    for (auto e : gr[node]) {
+      int u = e.first;
+      if (dist[u] > dist[node] + e.second) {
+        dist[u] = dist[node] + e.second;
 
-                if (dist[u] == dist[node] + 1)
-                    q.push_back({dist[u], u});
-                else if (dist[u] == dist[node])
-                    q.push_front({dist[u], u});
-            }
-        }
+        if (dist[u] == dist[node] + 1)
+          q.push_back({dist[u], u});
+        else if (dist[u] == dist[node])
+          q.push_front({dist[u], u});
+      }
     }
+  }
 
-    return;
+  return;
 }
 
-int main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
 
-    cin >> n >> a >> b;
+  cin >> n >> a >> b;
 
-    while (cin >> u >> v)
-    {
-        gr[u].push_back({v, 0});
-        gr[v].push_back({u, 1});
-    }
+  while (cin >> u >> v) {
+    gr[u].push_back({v, 0});
+    gr[v].push_back({u, 1});
+  }
 
-    BFS01(a);
+  BFS01(a);
 
-    if (dist[b] == INT_MAX / 100)
-        cout << "X" << endl;
-    else
-        cout << dist[b] << endl;
+  if (dist[b] == INT_MAX / 100)
+    cout << "X" << endl;
+  else
+    cout << dist[b] << endl;
 
-    return 0;
+  return 0;
 }

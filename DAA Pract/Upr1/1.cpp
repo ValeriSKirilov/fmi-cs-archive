@@ -4,13 +4,12 @@
 
 #include <iostream>
 
-int main()
-{
-    std::string test;
+int main() {
+  std::string test;
 
-    std::cin >> test;
+  std::cin >> test;
 
-    std::cout << "Hello, " << test << std::endl;
+  std::cout << "Hello, " << test << std::endl;
 
-    return 0;
+  return 0;
 }

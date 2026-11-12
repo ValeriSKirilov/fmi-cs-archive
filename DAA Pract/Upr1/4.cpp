@@ -9,20 +9,17 @@
 
 using namespace std;
 
-int main()
-{
-    long long x;
+int main() {
+  long long x;
 
-    stack<double> st;
+  stack<double> st;
 
-    while (cin >> x)
-        st.push(sqrt(x));
+  while (cin >> x) st.push(sqrt(x));
 
-    while (!st.empty())
-    {
-        cout << fixed << setprecision(6) << st.top() << '\n';
-        st.pop();
-    }
+  while (!st.empty()) {
+    cout << fixed << setprecision(6) << st.top() << '\n';
+    st.pop();
+  }
 
-    return 0;
+  return 0;
 }

@@ -6,62 +6,52 @@ using namespace std;
 
 int n, m, a, b, ccomp, par[MAX], sz[MAX], d[MAX], maxcomp = 1;
 
-int find(int a)
-{
-    if (par[a] == 0)
-        return a;
+int find(int a) {
+  if (par[a] == 0) return a;
 
-    return par[a] = find(par[a]);
+  return par[a] = find(par[a]);
 }
 
-void myUnion(int a, int b)
-{
-    a = find(a);
-    b = find(b);
+void myUnion(int a, int b) {
+  a = find(a);
+  b = find(b);
 
-    if (a == b)
-    {
-        return;
-    }
+  if (a == b) {
+    return;
+  }
 
-    ccomp--;
+  ccomp--;
 
-    if (d[a] > d[b])
-    {
-        par[b] = a;
-        sz[a] += sz[b];
-        maxcomp = max(maxcomp, sz[a]);
+  if (d[a] > d[b]) {
+    par[b] = a;
+    sz[a] += sz[b];
+    maxcomp = max(maxcomp, sz[a]);
+  } else {
+    par[a] = b;
+    sz[b] += sz[a];
+    maxcomp = max(maxcomp, sz[b]);
+    if (d[a] == d[b]) {
+      d[b]++;
     }
-    else
-    {
-        par[a] = b;
-        sz[b] += sz[a];
-        maxcomp = max(maxcomp, sz[b]);
-        if (d[a] == d[b])
-        {
-            d[b]++;
-        }
-    }
+  }
 }
 
-int main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
+int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
 
-    cin >> n >> m;
+  cin >> n >> m;
 
-    fill(sz + 1, sz + n + 1, 1);
-    ccomp = n;
+  fill(sz + 1, sz + n + 1, 1);
+  ccomp = n;
 
-    for (int i = 0; i < m; i++)
-    {
-        cin >> a >> b;
-        myUnion(a, b);
+  for (int i = 0; i < m; i++) {
+    cin >> a >> b;
+    myUnion(a, b);
 
-        cout << ccomp << " " << maxcomp << endl;
-    }
+    cout << ccomp << " " << maxcomp << endl;
+  }
 
-    return 0;
+  return 0;
 }

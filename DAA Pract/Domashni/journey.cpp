@@ -13,78 +13,71 @@ vector<pair<long long, pair<long long, int>>> gr[MAX];
 
 bool visited[MAX];
 
-void dijkstra(int node)
-{
-    priority_queue<PA, vector<PA>, greater<PA>> pq;
-    fill(dist, dist + n + k + 100, pair<long long, int>{LLONG_MAX, 0});
+void dijkstra(int node) {
+  priority_queue<PA, vector<PA>, greater<PA>> pq;
+  fill(dist, dist + n + k + 100, pair<long long, int>{LLONG_MAX, 0});
 
-    dist[node] = {0, 0};
-    pq.push({dist[node], node});
+  dist[node] = {0, 0};
+  pq.push({dist[node], node});
 
-    while (!pq.empty())
-    {
-        node = pq.top().second;
-        pq.pop();
+  while (!pq.empty()) {
+    node = pq.top().second;
+    pq.pop();
 
-        if (visited[node])
-            continue;
-        visited[node] = true;
+    if (visited[node]) continue;
+    visited[node] = true;
 
-        for (auto [u, s] : gr[node])
-        {
-            int w = s.first;
-            int t = s.second;
+    for (auto [u, s] : gr[node]) {
+      int w = s.first;
+      int t = s.second;
 
-            pair<long long, int> newNode = {dist[node].first + w, dist[node].second + t};
+      pair<long long, int> newNode = {dist[node].first + w,
+                                      dist[node].second + t};
 
-            if (dist[u] > newNode)
-            {
-                dist[u] = newNode;
-                pq.push({dist[u], u});
-            }
-        }
+      if (dist[u] > newNode) {
+        dist[u] = newNode;
+        pq.push({dist[u], u});
+      }
     }
+  }
 }
 
-int main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
 
-    cin >> n >> m >> k;
+  cin >> n >> m >> k;
 
-    for (int i = 1; i <= k; i++)
-    {
-        cin >> type[i];
-    }
+  for (int i = 1; i <= k; i++) {
+    cin >> type[i];
+  }
 
-    for (int i = 1; i <= k; i++)
-    {
-        cin >> price[i];
-    }
+  for (int i = 1; i <= k; i++) {
+    cin >> price[i];
+  }
 
-    for (int i = 0; i < m; i++)
-    {
-        cin >> a >> b >> c;
-        edges.push_back({c, {a, b}});
-    }
+  for (int i = 0; i < m; i++) {
+    cin >> a >> b >> c;
+    edges.push_back({c, {a, b}});
+  }
 
-    sort(edges.begin(), edges.end());
+  sort(edges.begin(), edges.end());
 
-    for (int i = 0; i < m; i++)
-    {
-        int u = edges[i].second.first;
-        int v = edges[i].second.second;
-        
-        gr[u].push_back({edges[i].first + n, {price[edges[i].first], type[edges[i].first]}});
-        gr[edges[i].first + n].push_back({u, {0, 0}});
+  for (int i = 0; i < m; i++) {
+    int u = edges[i].second.first;
+    int v = edges[i].second.second;
 
-        gr[v].push_back({edges[i].first + n, {price[edges[i].first], type[edges[i].first]}});
-        gr[edges[i].first + n].push_back({v, {0, 0}});
-    }
+    gr[u].push_back(
+        {edges[i].first + n, {price[edges[i].first], type[edges[i].first]}});
+    gr[edges[i].first + n].push_back({u, {0, 0}});
 
-    dijkstra(1);
+    gr[v].push_back(
+        {edges[i].first + n, {price[edges[i].first], type[edges[i].first]}});
+    gr[edges[i].first + n].push_back({v, {0, 0}});
+  }
 
-    cout << dist[n].first << ' ' << dist[n].second << '\n';
+  dijkstra(1);
+
+  cout << dist[n].first << ' ' << dist[n].second << '\n';
 }

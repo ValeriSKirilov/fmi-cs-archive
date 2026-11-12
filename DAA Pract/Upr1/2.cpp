@@ -4,13 +4,12 @@
 
 #include <iostream>
 
-int main()
-{
-    std::size_t a, b;
+int main() {
+  std::size_t a, b;
 
-    std::cin >> a >> b;
+  std::cin >> a >> b;
 
-    std::cout << a + b << '\n';
+  std::cout << a + b << '\n';
 
-    return 0;
+  return 0;
 }

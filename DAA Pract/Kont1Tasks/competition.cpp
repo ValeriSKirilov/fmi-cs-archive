@@ -8,35 +8,31 @@ int n;
 
 vector<long long> x(MAX);
 
-int main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
 
-    cin >> n;
+  cin >> n;
 
-    for (int i = 0; i < n; i++)
-        cin >> x[i];
+  for (int i = 0; i < n; i++) cin >> x[i];
 
-    sort(x.begin(), x.begin() + n);
+  sort(x.begin(), x.begin() + n);
 
-    int l = 0;
-    long long minEl1 = 0, minEl2 = 1;
+  int l = 0;
+  long long minEl1 = 0, minEl2 = 1;
 
-    int ans = 2;
+  int ans = 2;
 
-    for (int r = 2; r < n; r++)
-    {
-        while (r - l >= 2 && x[l] + x[l + 1] <= x[r])
-        {
-            l++;
-        }
-
-        ans = max(r - l + 1, ans);
+  for (int r = 2; r < n; r++) {
+    while (r - l >= 2 && x[l] + x[l + 1] <= x[r]) {
+      l++;
     }
 
-    cout << ans << '\n';
+    ans = max(r - l + 1, ans);
+  }
 
-    return 0;
+  cout << ans << '\n';
+
+  return 0;
 }

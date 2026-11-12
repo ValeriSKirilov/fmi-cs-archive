@@ -6,25 +6,21 @@ using namespace std;
 
 int dp[MAX], a[MAX];
 
-int main()
-{
-    int x, n = 1;
-    while (cin >> x)
-    {
-        a[n] = x;
-        n++;
-    }
+int main() {
+  int x, n = 1;
+  while (cin >> x) {
+    a[n] = x;
+    n++;
+  }
 
-    fill(dp, dp + n + 5, 0);
+  fill(dp, dp + n + 5, 0);
 
-    for (int i = 1; i <= n; i++)
-        dp[a[i]] = dp[a[i] - 1] + 1;
+  for (int i = 1; i <= n; i++) dp[a[i]] = dp[a[i] - 1] + 1;
 
-    int ans = 0;
-    for (int i = 0; i < MAX; i++)
-        ans = max(ans, dp[i]);
+  int ans = 0;
+  for (int i = 0; i < MAX; i++) ans = max(ans, dp[i]);
 
-    cout << ans << '\n';
+  cout << ans << '\n';
 
-    return 0;
+  return 0;
 }

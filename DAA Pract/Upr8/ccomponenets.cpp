@@ -8,46 +8,39 @@ int n, m;
 vector<int> g[MAX];
 bool visited[MAX];
 
-void dfs(int v)
-{
-    visited[v] = true;
+void dfs(int v) {
+  visited[v] = true;
 
-    for (auto u : g[v])
-    {
-        if (!visited[u])
-        {
-            dfs(u);
-        }
+  for (auto u : g[v]) {
+    if (!visited[u]) {
+      dfs(u);
     }
+  }
 }
 
-int main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
 
-    cin >> n >> m;
+  cin >> n >> m;
 
-    int u, v;
-    for (int i = 1; i <= m; i++)
-    {
-        cin >> u >> v;
-        g[u].push_back(v);
-        g[v].push_back(u);
+  int u, v;
+  for (int i = 1; i <= m; i++) {
+    cin >> u >> v;
+    g[u].push_back(v);
+    g[v].push_back(u);
+  }
+
+  int count = 0;
+  for (int i = 1; i <= n; i++) {
+    if (!visited[i]) {
+      count++;
+      dfs(i);
     }
+  }
 
-    int count = 0;
-    for (int i = 1; i <= n; i++)
-    {
-        if (!visited[i])
-        {
-            count++;
-            dfs(i);
-        }
-    }
+  cout << count << endl;
 
-    cout << count << endl;
-
-    return 0;
+  return 0;
 }
