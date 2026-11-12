@@ -3,29 +3,30 @@
 //
 
 #include <fcntl.h>
-#include <unistd.h>
 #include <stdio.h>
+#include <unistd.h>
+
 
 int main(const int argc, char **argv) {
-    if (argc < 2) {
-        perror("Invalid number of arguments. A filename is required");
-        return 1;
-    }
+  if (argc < 2) {
+    perror("Invalid number of arguments. A filename is required");
+    return 1;
+  }
 
-    const int fd = open(argv[1], O_RDONLY);
-    if (fd == -1) {
-        perror("Error opening file");
-        return 1;
-    }
+  const int fd = open(argv[1], O_RDONLY);
+  if (fd == -1) {
+    perror("Error opening file");
+    return 1;
+  }
 
-    char buffer[16];
+  char buffer[16];
 
-    for (int i = 5; i >= 1; i--) {
-        read(fd, buffer, i);
-        printf("%s\n", buffer);
-    }
+  for (int i = 5; i >= 1; i--) {
+    read(fd, buffer, i);
+    printf("%s\n", buffer);
+  }
 
-    close(fd);
+  close(fd);
 
-    return 0;
+  return 0;
 }
