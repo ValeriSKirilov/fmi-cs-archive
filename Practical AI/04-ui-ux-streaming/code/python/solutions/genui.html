@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Generative UI (ръчно)</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; }
+    .row { display: flex; gap: .5rem; margin-bottom: .75rem; flex-wrap: wrap; }
+    input, button { padding: .5rem; font-size: 1rem; }
+    input { flex: 1; min-width: 12rem; }
+    .chip { border-radius: 999px; border: 1px solid #888; background: #f5f5f5; cursor: pointer; font-size: .9rem; }
+    #msg { border: 1px solid #ccc; border-radius: 8px; padding: 1rem; min-height: 8rem; }
+    #msg p { white-space: pre-wrap; margin: .5rem 0; }
+    pre { background: #f0f0f0; padding: .5rem; border-radius: 6px; font-size: .8rem; white-space: pre-wrap; }
+    .wait { color: #666; font-style: italic; }
+    .err { color: #b00020; font-weight: 600; }
+    .card { display: inline-flex; gap: 1rem; align-items: center; padding: .75rem 1.25rem; margin: .5rem 0;
+            border-radius: 12px; background: linear-gradient(135deg, #cfe8ff, #fff4cc); border: 1px solid #9bc4ee; }
+    .card .t { font-size: 2.2rem; font-weight: 700; }
+    .card .c { font-size: .95rem; color: #333; }
+    #log { white-space: pre-line; color: #555; font-size: .85rem; margin-top: .75rem; font-family: ui-monospace, monospace; }
+  </style>
+</head>
+<body>
+  <h1>Generative UI (ръчно)</h1>
+  <div class="row" id="chips">
+    <button class="chip">Какво е времето във Варна?</button>
+    <button class="chip">Какво е времето в Атлантида?</button>
+    <button class="chip">Защо небето е синьо?</button>
+  </div>
+  <div class="row">
+    <input id="q" placeholder="Задайте въпрос…" />
+    <button id="send">Изпрати</button>
+  </div>
+  <div id="msg"></div>
+  <div id="log"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let parts = [];           // съобщението = списък от части (като message.parts)
+
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+    // ДАДЕНО: компонентът.
+    function weatherCard({ city, tempC, condition }) {
+      return `<div class="card"><div class="t">${esc(tempC)}°</div>
+              <div><strong>${esc(city)}</strong><div class="c">${esc(condition)}</div></div></div>`;
+    }
+
+    // ДАДЕНО: слива събитието в частите (текстът се долепя, инструментът се обновява по id).
+    function applyEvent(ev) {
+      if (ev.type === "text") {
+        const last = parts[parts.length - 1];
+        if (last && last.type === "text") last.text += ev.delta;
+        else parts.push({ type: "text", text: ev.delta });
+      } else {
+        const i = parts.findIndex((p) => p.id === ev.id);
+        if (i >= 0) parts[i] = { ...parts[i], ...ev };
+        else parts.push(ev);
+      }
+    }
+
+    // ВАШЕТО: част -> HTML. Решение:
+    function renderPart(part) {
+      switch (part.type) {
+        case "text":
+          return `<p>${esc(part.text)}</p>`;
+        case "tool-weather":
+          if (part.state === "output-available") return weatherCard(part.output);
+          if (part.state === "output-error") return `<div class="err">Грешка: ${esc(part.errorText)}</div>`;
+          return `<div class="wait">Проверявам времето…</div>`;
+        default:
+          return `<pre>${esc(JSON.stringify(part))}</pre>`;
+      }
+    }
+
+    function render() { $("msg").innerHTML = parts.map(renderPart).join(""); }
+
+    let busy = false;
+    async function ask(q) {
+      if (busy) return;
+      busy = true;
+      try { await stream(q); }
+      catch (e) { $("msg").innerHTML += `<div class="err">Грешка: ${esc(e.message)}</div>`; }
+      finally { busy = false; }
+    }
+
+    async function stream(q) {
+      parts = []; render(); $("log").textContent = "";
+      const res = await fetch(`/ask?q=${encodeURIComponent(q)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split("\n\n");
+        buffer = events.pop();
+        for (const evt of events) {
+          const data = evt.replace(/^data: /, "");
+          if (data === "[DONE]") return;
+          const ev = JSON.parse(data);
+          if (ev.type !== "text") $("log").textContent += `${ev.type}: ${ev.state}\n`;
+          applyEvent(ev);
+          render();
+        }
+      }
+    }
+
+    $("send").addEventListener("click", () => $("q").value.trim() && ask($("q").value.trim()));
+    document.querySelectorAll(".chip").forEach((b) => b.addEventListener("click", () => ask(b.textContent)));
+  </script>
+</body>
+</html>

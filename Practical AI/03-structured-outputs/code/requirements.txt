@@ -1,0 +1,5 @@
+# Упражнение 3 — зависимости
+ollama>=0.4
+pydantic>=2.0
+python-dotenv>=1.0
+anthropic>=1.0   # само за --provider anthropic и Задача 3 (бонус)

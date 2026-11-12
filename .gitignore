@@ -5,3 +5,7 @@
 .config
 .vscode
 .idea
+.env
+__MACOSX
+__pycache__
+.venv

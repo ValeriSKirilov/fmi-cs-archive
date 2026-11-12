@@ -1,0 +1,8 @@
+# Упражнение 4 — зависимости (всичко работи локално, без ключ)
+fastapi>=0.110
+uvicorn>=0.29
+ollama>=0.4
+python-dotenv>=1.0
+# По избор, само за --provider openai / anthropic:
+# openai>=1.40
+# anthropic>=0.40

@@ -1,0 +1,4 @@
+# Упражнение 2 — зависимости
+ollama>=0.4
+python-dotenv>=1.0
+anthropic>=1.0   # само за --provider anthropic и demo_temperature.py

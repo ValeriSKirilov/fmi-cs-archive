@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SSE стрийминг чат</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; }
+    #out { white-space: pre-wrap; border: 1px solid #ccc; border-radius: 8px; padding: 1rem; min-height: 8rem; }
+    .row { display: flex; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    input, select, button { padding: .5rem; font-size: 1rem; }
+    input { flex: 1; min-width: 12rem; }
+    #stats { color: #555; font-size: .9rem; margin-top: .5rem; min-height: 1.2rem; }
+    #err { color: #b00020; font-weight: 600; margin-top: .5rem; min-height: 1.2rem; }
+    .cursor::after { content: "▋"; animation: blink 1s steps(2) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+  </style>
+</head>
+<body>
+  <h1>SSE стрийминг чат</h1>
+  <div class="row">
+    <select id="provider">
+      <option value="ollama">ollama (локален)</option>
+      <option value="openai">openai (нужен е ключ)</option>
+      <option value="anthropic">anthropic (нужен е ключ)</option>
+      <option value="sync">ollama · sync версия (Задача 4)</option>
+    </select>
+    <input id="q" value="Какво е стрийминг?" />
+    <button id="send">Изпрати</button>
+    <button id="stop" disabled>Спри</button>
+    <button id="chaos" title="Нарязан поток, без модел">Тест: нарязан поток</button>
+  </div>
+  <div id="out"></div>
+  <div id="stats"></div>
+  <div id="err"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const out = $("out"), stats = $("stats"), err = $("err");
+    const btnSend = $("send"), btnStop = $("stop"), btnChaos = $("chaos");
+    let controller = null;
+    let t0 = 0, ttft = null, deltas = 0;
+
+    // ДАДЕНО: показва една делта и мери TTFT и броя делти.
+    function onDelta(text) {
+      if (ttft === null) ttft = (performance.now() - t0) / 1000;
+      deltas += 1;
+      out.textContent += text;
+      stats.textContent = `TTFT: ${ttft.toFixed(2)}s · делти: ${deltas}`;
+    }
+
+    // ДАДЕНО: подготовка преди заявката и изчистване след нея.
+    function begin() {
+      out.textContent = ""; err.textContent = ""; stats.textContent = "";
+      ttft = null; deltas = 0; t0 = performance.now();
+      out.classList.add("cursor");
+      btnSend.disabled = btnChaos.disabled = true; btnStop.disabled = false;
+      controller = new AbortController();
+    }
+    function end(error) {
+      out.classList.remove("cursor");
+      btnSend.disabled = btnChaos.disabled = false; btnStop.disabled = true;
+      const total = ((performance.now() - t0) / 1000).toFixed(2);
+      if (error && error.name === "AbortError") stats.textContent += ` · спряно след ${total}s`;
+      else if (error) err.textContent = `Грешка: ${error.message}`;
+      else stats.textContent += ` · общо: ${total}s`;
+    }
+
+    async function run(url) {
+      begin();
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });   // капан 2
+          const events = buffer.split("\n\n");
+          buffer = events.pop();                               // капан 1
+          for (const evt of events) {
+            const data = evt.replace(/^data: /, "");
+            if (data === "[DONE]") return end();
+            onDelta(JSON.parse(data));
+          }
+        }
+        end();
+      } catch (e) {
+        end(e);
+      }
+    }
+
+    btnSend.addEventListener("click", () => {
+      const q = $("q").value.trim();
+      const p = $("provider").value;
+      if (!q) return;
+      run(p === "sync" ? `/chat_sync?q=${encodeURIComponent(q)}`
+                       : `/chat?q=${encodeURIComponent(q)}&provider=${p}`);
+    });
+    btnChaos.addEventListener("click", () => run("/chaos?size=3"));
+    btnStop.addEventListener("click", () => controller && controller.abort());
+  </script>
+</body>
+</html>
