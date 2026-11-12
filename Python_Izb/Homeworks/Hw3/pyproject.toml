@@ -1,0 +1,10 @@
+[project]
+name = "tmdb-sdk"
+version = "0.1.0"
+dependencies = [
+    "requests",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
