@@ -1,2 +1,5 @@
 *.Identifier
-.*
+.bash*
+.viminfo
+.lesshst
+.config
