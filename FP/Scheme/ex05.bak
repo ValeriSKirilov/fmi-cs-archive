@@ -1,0 +1,12 @@
+#lang racket
+
+; Създаване на асоциативен списък
+(define phone-book
+  '((alice . "555-1234")
+    (bob . "555-5678")
+    (charlie . "555-9012")))
+
+; Основни функции за работа с асоциативни списъци
+(assoc 'alice phone-book)     ; => (alice . "555-1234")
+(assq 'bob phone-book)        ; => (bob . "555-5678") - използва eq? за сравнение
+(assv 42 '((1 . "one") (42 . "forty-two"))) ; => (42 . "forty-two") - използва eqv?

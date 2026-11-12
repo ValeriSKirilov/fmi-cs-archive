@@ -1,0 +1,5 @@
+Sum: 10
+Average: 2.5
+Mode: 4
+Min: 1
+Max: 4

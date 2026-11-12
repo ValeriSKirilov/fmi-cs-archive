@@ -1,0 +1,11 @@
+#lang racket
+
+(define (sum-down-from n sum)
+  (if(= n 1)
+     1
+     (sum-down-from (- n 1) (+ sum n))))
+
+(define (sum n)
+  (sum-down-from n 0))
+
+(sum 5)
