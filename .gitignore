@@ -3,3 +3,5 @@
 .viminfo
 .lesshst
 .config
+.vscode
+.idea
