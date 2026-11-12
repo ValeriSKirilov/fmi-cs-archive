@@ -1,0 +1,10 @@
+dist-newstyle/
+dist/
+cabal.project.local*
+.stack-work/
+*.o
+*.hi
+*.chi
+*.chs.h
+*.md
+*.zip

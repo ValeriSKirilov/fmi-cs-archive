@@ -1,0 +1,48 @@
+cabal-version:      3.0
+name:               Wordle
+version:            0.1.0.0
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Valeri K.
+maintainer:         valeri.stoyanov2005@gmail.com
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import: warnings
+    exposed-modules: 
+                    Game.Types,
+
+                    --- WORDLE ---
+                    Game.Wordle.WordleCore,
+                    Game.Wordle.Easy,
+                    Game.Wordle.Normal,
+                    Game.Wordle.Hard,
+                    Game.Wordle,
+
+                    --- SOLVER ---
+                    Game.Solver.SolverCore,
+                    Game.Solver.NormalSolver,
+                    Game.Solver.ExpertSolver,
+                    Game.Solver,
+
+                    --- UTILS ---
+                    Utils.Display,
+                    Utils.Words,
+                    Utils.SolverUtils
+    hs-source-dirs: src
+    build-depends: base ^>=4.18.3.0,
+                   random
+    default-language:Haskell2010
+
+
+executable Wordle
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    base ^>=4.18.3.0,
+                      Wordle
+    hs-source-dirs:   app
+    default-language: Haskell2010
