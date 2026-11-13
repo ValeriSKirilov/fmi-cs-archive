@@ -1,18 +1,18 @@
 #include <fcntl.h>
+#include <stdlib.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[]){
-	int f = open(argv[1], O_WRONLY | O_CREAT | O_APPEND, 0644);
-	
-	if(f == -1)
-		exit(2);
+int main(int argc, char *argv[]) {
+  int f = open(argv[1], O_WRONLY | O_CREAT | O_APPEND, 0644);
 
-	int n;
-	char buffer[4096];
+  if (f == -1) exit(2);
 
-	while((n = read(0, buffer, 4096)) > 0){
-		write(f, buffer, n);
-	}
+  int n;
+  char buffer[4096];
 
-	return 0;	
+  while ((n = read(0, buffer, 4096)) > 0) {
+    write(f, buffer, n);
+  }
+
+  return 0;
 }
