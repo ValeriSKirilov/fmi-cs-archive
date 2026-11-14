@@ -1,0 +1,38 @@
+Consecutive Lettersspoj
+You are given a string S containing only uppercase English letters. There are Q queries. Each query can be of two types:
+
+1 i: Find the maximum size of the segment [b, e] where 0 â¤ b â¤ i â¤ e < |S| and substring S[b...e] contains only the letter S[i]. A Substring is a contiguous sequences of characters in a string.
+2 i: Change the character in index i with the character â#â.
+For both type of queries, S[i] will not contain the character â#â.The characters of the string are indexed from 0.
+
+Input
+The first line contains number of test cases T (1 â¤ T â¤ 15).
+
+For each test cases, the first line contains the string S (1 â¤ |S| â¤ 200000). The 2nd line contains number of queries Q (1 â¤ Q â¤ 100000). Each of the next Q lines contains one query in the format mentioned in the problem statement.
+
+Output
+For each test case, first print the test case number and output of every query of type 1 in a single line.
+
+Sample
+Input 2
+AABBBCCCC
+5
+1 0
+2 1
+1 0
+2 2
+1 3
+XXYYY
+3
+1 3
+2 3
+1 2 Output Case 1:
+2
+1
+2
+Case 2:
+3
+1
+Warning: The input file is huge, please use fast I/O.
+
+Note: The dataset and time limit have been modified to fit SPOJ.

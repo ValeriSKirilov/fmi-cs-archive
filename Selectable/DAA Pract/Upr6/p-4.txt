@@ -1,0 +1,5 @@
+https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
+https://action.informatika.bg/problems/209
+https://action.informatika.bg/problems/185
+https://lightoj.com/problem/closest-distance
+https://codeforces.com/problemset/problem/578/C
