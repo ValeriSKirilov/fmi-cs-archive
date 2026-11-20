@@ -15,3 +15,15 @@ while( (broi=read(fd1,buff,10)) != 0)
       }
 printf("\n%d\n",broi);
 }
+
+OUTPUT:
+I am a stuECHO
+10
+dent CompuECHO
+10
+ter sciencECHO
+10
+e!!!ECHO
+4
+
+0

@@ -14,3 +14,11 @@ int main( int argc, char *argv[])
         write(fdi,"teacher",7);
         write(1,"py child",8);
 }
+
+OUTPUT:
+// NOT INCLUDED
+	ffff: I am a student!
+//
+
+I am a happy child
+ffff -> I am a teacher!

@@ -1,0 +1,29 @@
+# Вдига pgvector през Docker, без локална инсталация на PostgreSQL.
+# Локално трябват само Docker, Python (леки клиенти) и Ollama.
+#
+#   docker compose up -d
+#
+# Спиране: docker compose down   (с -v се изтриват и данните)
+
+# Собствено име на проекта: иначе Docker го кръщава на папката („code“), както
+# и в Тема 6, и двете теми делят един volume. Тогава init.sql не се изпълнява
+# (базата вече съществува) и таблицата chunks липсва.
+name: rag-basics
+
+services:
+  pgvector:                        # PostgreSQL + pgvector (както в Тема 6)
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vectors
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql   # схема + HNSW индекс
+
+  # Ollama НЕ е тук: ползва се локално инсталираният (localhost:11434).
+
+volumes:
+  pg_data:

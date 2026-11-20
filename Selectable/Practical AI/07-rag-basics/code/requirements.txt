@@ -1,0 +1,11 @@
+# Упражнение 7: леки Python клиенти (базата се вдига с Docker)
+psycopg[binary]>=3.1
+pgvector>=0.3
+numpy>=1.26
+ollama>=0.4
+pydantic>=2.7
+python-dotenv>=1.0
+
+# по избор, само за облачните варианти (GEN_PROVIDER=openai / anthropic)
+openai>=2.0
+anthropic>=1.0

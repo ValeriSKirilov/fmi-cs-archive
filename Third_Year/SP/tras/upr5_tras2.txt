@@ -15,3 +15,6 @@ int main (int argc, char * argv [ ] )
                }
               else printf("Stoinostta na i= %d\n",i);}
 }
+
+OUTPUT:
+Stoinostta na i= 1
